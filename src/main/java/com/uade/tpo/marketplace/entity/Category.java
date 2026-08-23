@@ -1,4 +1,4 @@
-package com.uade.tpo.demo.entity;
+package com.uade.tpo.marketplace.entity;
 
 import lombok.Builder;
 import lombok.Data;

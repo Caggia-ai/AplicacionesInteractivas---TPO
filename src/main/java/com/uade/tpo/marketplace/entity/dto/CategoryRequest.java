@@ -1,4 +1,4 @@
-package com.uade.tpo.demo.entity.dto;
+package com.uade.tpo.marketplace.entity.dto;
 
 import lombok.Data;
 

@@ -1,11 +1,11 @@
-package com.uade.tpo.demo.service;
+package com.uade.tpo.marketplace.service;
 
 import java.util.ArrayList;
 import java.util.Optional;
 
-import com.uade.tpo.demo.entity.Category;
-import com.uade.tpo.demo.exceptions.CategoryDuplicateException;
-import com.uade.tpo.demo.repository.CategoryRepository;
+import com.uade.tpo.marketplace.entity.Category;
+import com.uade.tpo.marketplace.exceptions.CategoryDuplicateException;
+import com.uade.tpo.marketplace.repository.CategoryRepository;
 
 public class CategoryService {
     private CategoryRepository categoryRepository;

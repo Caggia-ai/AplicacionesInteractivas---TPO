@@ -1,12 +1,12 @@
-package com.uade.tpo.demo.controllers;
+package com.uade.tpo.marketplace.controllers;
 
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.uade.tpo.demo.entity.Category;
-import com.uade.tpo.demo.entity.dto.CategoryRequest;
-import com.uade.tpo.demo.exceptions.CategoryDuplicateException;
-import com.uade.tpo.demo.service.CategoryService;
+import com.uade.tpo.marketplace.entity.Category;
+import com.uade.tpo.marketplace.entity.dto.CategoryRequest;
+import com.uade.tpo.marketplace.exceptions.CategoryDuplicateException;
+import com.uade.tpo.marketplace.service.CategoryService;
 
 import java.net.URI;
 import java.util.ArrayList;
