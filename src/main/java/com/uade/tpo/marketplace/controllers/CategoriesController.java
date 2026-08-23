@@ -1,39 +1,50 @@
-package com.uade.tpo.marketplace.controllers;
+package com.uade.tpo.demo.controllers;
 
-import com.uade.tpo.marketplace.service.CategoryService;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
+import com.uade.tpo.demo.entity.Category;
+import com.uade.tpo.demo.entity.dto.CategoryRequest;
+import com.uade.tpo.demo.exceptions.CategoryDuplicateException;
+import com.uade.tpo.demo.service.CategoryService;
+
+import java.net.URI;
 import java.util.ArrayList;
+import java.util.Optional;
 
-import com.uade.tpo.marketplace.entity.*;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RequestBody;
-
 
 @RestController
 @RequestMapping("categories")
 public class CategoriesController {
-    
+    private CategoryService categoryService;
+
+    public CategoriesController() {
+        categoryService = new CategoryService();
+    }
 
     @GetMapping
-    public ArrayList<Category> getCategories(){
-        CategoryService categoryService = new CategoryService();
-        return categoryService.getCategories();
+    public ResponseEntity<ArrayList<Category>> getCategories() {
+        return ResponseEntity.ok(categoryService.getCategories());
     }
 
     @GetMapping("/{categoryId}")
-    public String getCategoryById(@PathVariable int categoryId){
-        CategoryService categoryService = new CategoryService();
-        return categoryService.getCategoryById(categoryId);
+    public ResponseEntity<Category> getCategoryById(@PathVariable int categoryId) {
+        Optional<Category> result = categoryService.getCategoryById(categoryId);
+        if (result.isPresent())
+            return ResponseEntity.ok(result.get());
+
+        return ResponseEntity.noContent().build();
     }
 
     @PostMapping
-    public int createCategory(@RequestBody int categoryId) {  
-        CategoryService categoryService = new CategoryService();
-        return categoryService.createCategory(categoryId);
+    public ResponseEntity<Object> createCategory(@RequestBody CategoryRequest categoryRequest)
+            throws CategoryDuplicateException {
+        Category result = categoryService.createCategory(categoryRequest.getId(), categoryRequest.getDescription());
+        return ResponseEntity.created(URI.create("/categories/" + result.getId())).body(result);
     }
-    
 }

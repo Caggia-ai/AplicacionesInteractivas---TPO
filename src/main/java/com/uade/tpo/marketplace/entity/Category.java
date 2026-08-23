@@ -1,4 +1,4 @@
-package com.uade.tpo.marketplace.entity;
+package com.uade.tpo.demo.entity;
 
 import lombok.Builder;
 import lombok.Data;
@@ -8,6 +8,4 @@ import lombok.Data;
 public class Category {
     private int id;
     private String description;
-
-
 }

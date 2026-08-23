@@ -1,30 +1,34 @@
-package com.uade.tpo.marketplace.repository;
+package com.uade.tpo.demo.repository;
+
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Optional;
 
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-
-import com.uade.tpo.marketplace.entity.Category;
-
+import com.uade.tpo.demo.entity.Category;
 
 public class CategoryRepository {
-    public ArrayList<Category> categories= new ArrayList<Category>(
-        Arrays.asList(Category.builder().id(1).description("Electronica").build(),
-                    Category.builder().id(2).description("Sillas").build(),
-                    Category.builder().id(3).description("Colchones").build())
-    );
+    private ArrayList<Category> categories;
 
-    public ArrayList<Category> getCategories(){
+    public CategoryRepository() {
+        categories = new ArrayList<Category>(
+                Arrays.asList(Category.builder().description("Electronica").id(1).build(),
+                        Category.builder().description("Cocina").id(2).build(),
+                        Category.builder().description("Gaming").id(3).build()));
+    }
+
+    public ArrayList<Category> getCategories() {
         return this.categories;
     }
 
-    public String getCategoryById(@PathVariable int categoryId){
-        return null;
+    public Optional<Category> getCategoryById(int categoryId) {
+        return this.categories.stream().filter(m -> m.getId() == categoryId).findAny();
     }
 
-    public String createCategory(@RequestBody int entity) {  
-        //metodo      
-        return null;
+    public Category createCategory(int newCategoryId, String description) {
+        Category newCategory = Category.builder()
+                .description(description)
+                .id(newCategoryId).build();
+        this.categories.add(newCategory);
+        return newCategory;
     }
 }
