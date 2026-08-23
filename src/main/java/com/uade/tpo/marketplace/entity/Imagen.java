@@ -7,5 +7,6 @@ import lombok.Data;
 @Builder
 public class Imagen {
     private int id_imagen;
+    private Producto producto;
     private String url;
 }

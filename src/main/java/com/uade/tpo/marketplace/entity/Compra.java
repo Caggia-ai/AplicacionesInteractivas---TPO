@@ -7,6 +7,7 @@ import lombok.Data;
 @Builder
 public class Compra {
     private int id_compra;
+    private Usuario usuario;
     private String metodo_pago;
     private String fecha;
     private int total;

@@ -7,6 +7,8 @@ import lombok.Data;
 @Builder
 public class Producto {
     private int id_producto;
+    private Category category;
+    private Usuario usuario;
     private String nombre;
     private String descripcion;
     private int precio;

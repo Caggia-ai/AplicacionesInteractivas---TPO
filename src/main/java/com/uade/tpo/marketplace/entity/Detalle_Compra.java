@@ -7,7 +7,8 @@ import lombok.Data;
 @Builder
 public class Detalle_Compra {
     private int id_detalle_compra;
-    private int id_producto;
+    private Compra compra;
+    private Producto producto;
     private int precio_unitario;
     private int cantidad;
 }
