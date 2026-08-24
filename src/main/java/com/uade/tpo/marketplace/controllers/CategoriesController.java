@@ -9,9 +9,10 @@ import com.uade.tpo.marketplace.exceptions.CategoryDuplicateException;
 import com.uade.tpo.marketplace.service.CategoryService;
 
 import java.net.URI;
-import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -21,19 +22,17 @@ import org.springframework.web.bind.annotation.RequestBody;
 @RestController
 @RequestMapping("categories")
 public class CategoriesController {
+    @Autowired
     private CategoryService categoryService;
 
-    public CategoriesController() {
-        categoryService = new CategoryService();
-    }
 
     @GetMapping
-    public ResponseEntity<ArrayList<Category>> getCategories() {
+    public ResponseEntity<List<Category>> getCategories() {
         return ResponseEntity.ok(categoryService.getCategories());
     }
 
     @GetMapping("/{categoryId}")
-    public ResponseEntity<Category> getCategoryById(@PathVariable int categoryId) {
+    public ResponseEntity<Category> getCategoryById(@PathVariable Long categoryId) {
         Optional<Category> result = categoryService.getCategoryById(categoryId);
         if (result.isPresent())
             return ResponseEntity.ok(result.get());
@@ -44,7 +43,7 @@ public class CategoriesController {
     @PostMapping
     public ResponseEntity<Object> createCategory(@RequestBody CategoryRequest categoryRequest)
             throws CategoryDuplicateException {
-        Category result = categoryService.createCategory(categoryRequest.getId(), categoryRequest.getDescription());
+        Category result = categoryService.createCategory(categoryRequest.getDescription());
         return ResponseEntity.created(URI.create("/categories/" + result.getId())).body(result);
     }
 }

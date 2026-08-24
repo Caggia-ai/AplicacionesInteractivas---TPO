@@ -11,15 +11,25 @@ import jakarta.persistence.JoinColumn;
 
 @Data
 @Entity
-public class Imagen {
+public class DetalleCompra {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id_imagen;
+    private int id_detalle_compra;
+    
+    //compra
+    //producto
 
     @Column
-    private String url;
+    private int precio_unitario;
+    @Column
+    private int cantidad;
+
+    @ManyToOne
+    @JoinColumn(name = "id_compra", nullable = false)
+    private Compra compra;
 
     @ManyToOne
     @JoinColumn(name = "id_producto", nullable = false)
     private Producto producto;
+    
 }
