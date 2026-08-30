@@ -11,15 +11,15 @@ import jakarta.persistence.JoinColumn;
 
 @Data
 @Entity
-public class Imagen {
+public class Image {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id_imagen;
+    private int id_image;
 
     @Column
     private String url;
 
     @ManyToOne
-    @JoinColumn(name = "id_producto", nullable = false)
-    private Producto producto;
+    @JoinColumn(name = "id_product", nullable = false)
+    private Product product;
 }

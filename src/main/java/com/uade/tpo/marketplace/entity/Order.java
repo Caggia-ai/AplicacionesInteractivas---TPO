@@ -9,32 +9,38 @@ import lombok.Data;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
+
 import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Data
 @Entity
-public class Compra {
+@Table(name = "orders")
+public class Order {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id_compra;
+    private int id_order;
     
     @Column
-    private String metodo_pago;
+    private String payment_method;
     @Column
-    private String fecha;
+    private String date;
     @Column
     private int total;
     @Column
-    private String forma_entrega;
+    private String delivery_method;
     @Column
-    private String tiempo_envio;
+    private String shipping_time;
     @Column
-    private String origen;
+    private String origin;
 
     @ManyToOne
-    @JoinColumn(name = "id_usuario", nullable = false)
-    private Usuario usuario;
+    @JoinColumn(name = "id_user", nullable = false)
+    private User user;
 
-    @OneToMany(mappedBy = "compra")
-    private List<DetalleCompra> detalleCompras;
+    @JsonIgnore
+    @OneToMany(mappedBy = "order")
+    private List<OrderItem> orderItems;
 }

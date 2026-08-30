@@ -8,11 +8,8 @@ import com.uade.tpo.marketplace.entity.Category;
 import com.uade.tpo.marketplace.entity.dto.CategoryRequest;
 import com.uade.tpo.marketplace.exceptions.CategoryDuplicateException;
 import com.uade.tpo.marketplace.service.CategoryService;
-import com.uade.tpo.marketplace.service.CategoryServiceImpl;
 
 import java.net.URI;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;

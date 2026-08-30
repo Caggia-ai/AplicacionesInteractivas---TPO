@@ -1,5 +1,5 @@
 package com.uade.tpo.marketplace.service;
 
-public class DetalleCompraService {
+public class CartItemService {
     
 }

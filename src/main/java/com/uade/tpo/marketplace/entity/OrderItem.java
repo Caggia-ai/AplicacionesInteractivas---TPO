@@ -11,25 +11,23 @@ import jakarta.persistence.JoinColumn;
 
 @Data
 @Entity
-public class DetalleCompra {
+public class OrderItem {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id_detalle_compra;
+    private int id_order_item;
     
-    //compra
-    //producto
 
     @Column
-    private int precio_unitario;
+    private int unit_price;
     @Column
-    private int cantidad;
+    private int quantity;
 
     @ManyToOne
-    @JoinColumn(name = "id_compra", nullable = false)
-    private Compra compra;
+    @JoinColumn(name = "id_order", nullable = false)
+    private Order order;
 
     @ManyToOne
-    @JoinColumn(name = "id_producto", nullable = false)
-    private Producto producto;
+    @JoinColumn(name = "id_product", nullable = false)
+    private Product product;
     
 }

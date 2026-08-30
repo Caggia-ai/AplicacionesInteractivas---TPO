@@ -1,5 +1,5 @@
 package com.uade.tpo.marketplace.repository;
 
-public class ProductoRepository {
+public class ImageRepository {
     
 }

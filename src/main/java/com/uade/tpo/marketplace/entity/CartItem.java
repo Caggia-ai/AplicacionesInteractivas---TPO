@@ -11,20 +11,20 @@ import lombok.Data;
 
 @Data
 @Entity
-public class ProductoCarrito {
+public class CartItem {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id_producto_carrito;
+    private int id_cart_item;
 
     @Column
-    private int precio_unitario;
+    private int unit_price;
     @Column
-    private int cantidad;
+    private int quantity;
 
     @ManyToOne
-    @JoinColumn(name = "id_carrito", nullable = false)
-    private Carrito carrito;
+    @JoinColumn(name = "id_cart", nullable = false)
+    private Cart cart;
     @ManyToOne
-    @JoinColumn(name = "id_producto", nullable = false)
-    private Producto producto;
+    @JoinColumn(name = "id_product", nullable = false)
+    private Product product;
 }

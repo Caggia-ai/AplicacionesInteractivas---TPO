@@ -1,5 +1,7 @@
 package com.uade.tpo.marketplace.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -23,6 +25,7 @@ public class Category {
     @Column
     private String description;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "category")
-    private java.util.List<Producto> productos;
+    private java.util.List<Product> products;
 }
