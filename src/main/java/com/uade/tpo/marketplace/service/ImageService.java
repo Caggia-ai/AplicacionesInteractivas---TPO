@@ -1,5 +1,7 @@
 package com.uade.tpo.marketplace.service;
 
-public class ImageService {
-    
+import com.uade.tpo.marketplace.entity.Image;
+
+public interface ImageService {
+    Image addImageToProduct(Long productId, String url);
 }

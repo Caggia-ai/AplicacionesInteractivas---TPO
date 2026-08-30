@@ -1,5 +1,7 @@
 package com.uade.tpo.marketplace.service;
 
-public class OrderService {
-    
+import com.uade.tpo.marketplace.entity.Order;
+
+public interface OrderService {
+    Order createOrderFromCart(Long userId, String paymentMethod, String deliveryMethod);
 }

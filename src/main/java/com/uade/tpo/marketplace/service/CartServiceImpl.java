@@ -21,8 +21,7 @@ public class CartServiceImpl implements CartService {
 
     @Override
     public Cart getCartByUserId(Long userId) {
-        return cartRepository.findByUserId(userId)
-            .orElseThrow(() -> new RuntimeException("El usuario no tiene un carrito activo"));
+        return cartRepository.findByUserId(userId).orElseThrow(() -> new RuntimeException("El usuario no tiene un carrito activo"));
     }
 
     @Override
@@ -30,7 +29,7 @@ public class CartServiceImpl implements CartService {
         User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
         Product product = productRepository.findById(productId).orElseThrow(() -> new RuntimeException("Producto no encontrado"));
 
-        // 1. Buscamos el carrito del usuario. Si no existe, creamos uno vacío al vuelo.
+        // 1. Buscamos el carrito del usuario. Si no existe, creamos uno vacío.
         Cart cart = cartRepository.findByUserId(userId).orElseGet(() -> {
             Cart newCart = new Cart();
             newCart.setUser(user);
