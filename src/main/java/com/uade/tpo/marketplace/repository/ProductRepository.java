@@ -1,6 +1,6 @@
 package com.uade.tpo.marketplace.repository;
 
-import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -12,8 +12,8 @@ import com.uade.tpo.marketplace.entity.Product;
 public interface ProductRepository extends JpaRepository<Product, Long> {
 
     @Query(value = "select p from Product p where p.name = ?1")
-    List<Product> findByName(String name);
+    Optional<Product> findByName(String name);
 
     @Query(value = "select p from Product p where p.description = ?1")
-    List<Product> findByDescription(String description);
+    Optional<Product> findByDescription(String description);
 }

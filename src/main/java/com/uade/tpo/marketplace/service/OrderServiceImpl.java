@@ -18,11 +18,9 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public Order createOrderFromCart(Long userId, String paymentMethod, String deliveryMethod) {
-        User user = userRepository.findById(userId)
-            .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+        User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
             
-        Cart cart = cartRepository.findByUserId(userId)
-            .orElseThrow(() -> new RuntimeException("El usuario no tiene carrito activo"));
+        Cart cart = cartRepository.findByUserId(userId).orElseThrow(() -> new RuntimeException("El usuario no tiene carrito activo"));
 
         if (cart.getProductosCarrito() == null || cart.getProductosCarrito().isEmpty()) {
             throw new RuntimeException("No se puede comprar con el carrito vacío");
