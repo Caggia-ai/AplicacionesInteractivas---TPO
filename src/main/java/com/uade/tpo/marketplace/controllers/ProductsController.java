@@ -50,6 +50,6 @@ public class ProductsController {
     public ResponseEntity<Object> createProduct(@RequestBody ProductRequest productRequest)
             throws ProductDuplicateException {
         Product result = productoService.createProduct(productRequest.getName(),productRequest.getDescription(), productRequest.getPrice(), productRequest.getStock(), productRequest.getDiscount_percentage(), productRequest.getId_category(), productRequest.getId_user());
-        return ResponseEntity.created(URI.create("/productos/" + result.getId_producto())).body(result);
+        return ResponseEntity.created(URI.create("/products/" + result.getId_product())).body(result);
     }
 }
