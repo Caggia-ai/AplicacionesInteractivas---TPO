@@ -40,15 +40,12 @@ public class ProductServiceImpl implements ProductService {
     public Product createProduct(String name, String description, int price, int stock, int discount_percentage, Long id_category, Long id_user) throws ProductDuplicateException {
         Optional<Product> productos = productoRepository.findByName(name);
         if (productos.isEmpty()){
-            // 1. Buscamos las entidades usando los parámetros exactos de tu método
             Category category = categoryRepository.findById(id_category).orElseThrow(() -> new RuntimeException("Categoría no encontrada"));
                 
             User user = userRepository.findById(id_user).orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
             
-            // 2. Creamos el producto
             Product product = new Product(name, description, price, stock, discount_percentage);
             
-            // 3. Asignamos las Foreign Keys correctamente (reemplaza el "product.setca")
             product.setCategory(category);
             product.setUser(user);
             

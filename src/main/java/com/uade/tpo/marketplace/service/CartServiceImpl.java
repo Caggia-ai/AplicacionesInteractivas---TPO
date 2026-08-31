@@ -29,7 +29,7 @@ public class CartServiceImpl implements CartService {
         User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
         Product product = productRepository.findById(productId).orElseThrow(() -> new RuntimeException("Producto no encontrado"));
 
-        // 1. Buscamos el carrito del usuario. Si no existe, creamos uno vacío.
+        
         Cart cart = cartRepository.findByUserId(userId).orElseGet(() -> {
             Cart newCart = new Cart();
             newCart.setUser(user);
@@ -38,7 +38,6 @@ public class CartServiceImpl implements CartService {
             return cartRepository.save(newCart);
         });
 
-        // 2. Creamos el renglón congelando el precio actual del catálogo
         CartItem item = new CartItem();
         item.setCart(cart);
         item.setProduct(product);
@@ -46,7 +45,6 @@ public class CartServiceImpl implements CartService {
         item.setUnit_price(product.getPrice()); 
         cartItemRepository.save(item);
 
-        // 3. Actualizamos el total del ticket principal
         cart.setTotal(cart.getTotal() + (item.getUnit_price() * item.getQuantity()));
         return cartRepository.save(cart);
     }

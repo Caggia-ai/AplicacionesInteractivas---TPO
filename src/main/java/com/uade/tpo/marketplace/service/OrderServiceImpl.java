@@ -26,29 +26,24 @@ public class OrderServiceImpl implements OrderService {
             throw new RuntimeException("No se puede comprar con el carrito vacío");
         }
 
-        // 1. Creamos la "Factura" (Order)
         Order order = new Order();
         order.setUser(user);
         order.setPayment_method(paymentMethod);
         order.setDelivery_method(deliveryMethod);
-        order.setDate(LocalDate.now().toString()); // Fecha actual del sistema
+        order.setDate(LocalDate.now().toString()); 
         order.setTotal(cart.getTotal());
         order = orderRepository.save(order);
 
-        // 2. Procesamos cada renglón del carrito
         for (CartItem cartItem : cart.getProductosCarrito()) {
             Product product = cartItem.getProduct();
 
-            // Validamos que haya stock suficiente para el salto a producción
             if (product.getStock() < cartItem.getQuantity()) {
                 throw new RuntimeException("Sin stock suficiente para el producto: " + product.getName());
             }
 
-            // Descontamos el stock físico
             product.setStock(product.getStock() - cartItem.getQuantity());
             productRepository.save(product);
 
-            // Creamos el renglón de la compra (Histórico inmutable)
             OrderItem orderItem = new OrderItem();
             orderItem.setOrder(order);
             orderItem.setProduct(product);
@@ -57,7 +52,6 @@ public class OrderServiceImpl implements OrderService {
             orderItemRepository.save(orderItem);
         }
 
-        // 3. Vaciamos el carrito para que el usuario pueda volver a comprar
         cartItemRepository.deleteAll(cart.getProductosCarrito());
         cart.setTotal(0);
         cartRepository.save(cart);
