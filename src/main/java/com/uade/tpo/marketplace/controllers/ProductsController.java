@@ -15,10 +15,13 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
 @RestController
@@ -51,5 +54,14 @@ public class ProductsController {
             throws ProductDuplicateException {
         Product result = productoService.createProduct(productRequest.getName(),productRequest.getDescription(), productRequest.getPrice(), productRequest.getStock(), productRequest.getDiscount_percentage(), productRequest.getId_category(), productRequest.getId_user());
         return ResponseEntity.created(URI.create("/products/" + result.getId_product())).body(result);
+    }
+
+    @DeleteMapping("/{productId}")
+    public ResponseEntity<String> deleteProduct(@PathVariable Long productId) {
+        boolean deleted = productoService.deleteProduct(productId);
+        if (deleted){
+            return ResponseEntity.ok("El producto fue eliminado correctamente");
+        }
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("El producto no existe");
     }
 }

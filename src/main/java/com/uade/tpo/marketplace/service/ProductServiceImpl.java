@@ -52,4 +52,13 @@ public class ProductServiceImpl implements ProductService {
         }
         throw new ProductDuplicateException();
     }
+
+    public boolean deleteProduct(Long productId) {
+        Optional<Product> product  = productoRepository.findById(productId);
+        if (product.isEmpty()){
+            return false;
+        }
+        productoRepository.deleteById(productId);
+        return true;
+    }
 }

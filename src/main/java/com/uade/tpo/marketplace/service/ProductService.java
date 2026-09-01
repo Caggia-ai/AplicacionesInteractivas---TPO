@@ -15,4 +15,6 @@ public interface ProductService {
     public Optional<Product> getProductById(Long productId);
 
     public Product createProduct(String nombre, String descripcion, int precio, int stock, int porcentaje_descuento, Long id_category, Long id_user) throws ProductDuplicateException;
+
+    public boolean deleteProduct(Long productId);
 }
