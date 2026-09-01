@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.uade.tpo.marketplace.entity.Product;
+import com.uade.tpo.marketplace.entity.dto.ProductPatchRequest;
 import com.uade.tpo.marketplace.entity.dto.ProductRequest;
 import com.uade.tpo.marketplace.exceptions.ProductDuplicateException;
 import com.uade.tpo.marketplace.service.ProductService;
@@ -19,6 +20,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -29,20 +31,20 @@ import org.springframework.web.bind.annotation.RequestBody;
 public class ProductsController {
 
     @Autowired
-    private ProductService productoService;
+    private ProductService productService;
 
     @GetMapping
     public ResponseEntity<Page<Product>> getProducts(
             @RequestParam(required = false) Integer page,
             @RequestParam(required = false) Integer size) {
         if (page == null || size == null)
-            return ResponseEntity.ok(productoService.getProducts(PageRequest.of(0, Integer.MAX_VALUE)));
-        return ResponseEntity.ok(productoService.getProducts(PageRequest.of(page, size)));
+            return ResponseEntity.ok(productService.getProducts(PageRequest.of(0, Integer.MAX_VALUE)));
+        return ResponseEntity.ok(productService.getProducts(PageRequest.of(page, size)));
     }
 
     @GetMapping("/{productId}")
     public ResponseEntity<Product> getProductById(@PathVariable Long productId) {
-        Optional<Product> result = productoService.getProductById(productId);
+        Optional<Product> result = productService.getProductById(productId);
         if (result.isPresent())
             return ResponseEntity.ok(result.get());
 
@@ -52,16 +54,18 @@ public class ProductsController {
     @PostMapping
     public ResponseEntity<Object> createProduct(@RequestBody ProductRequest productRequest)
             throws ProductDuplicateException {
-        Product result = productoService.createProduct(productRequest.getName(),productRequest.getDescription(), productRequest.getPrice(), productRequest.getStock(), productRequest.getDiscount_percentage(), productRequest.getId_category(), productRequest.getId_user());
+        Product result = productService.createProduct(productRequest.getName(),productRequest.getDescription(), productRequest.getPrice(), productRequest.getStock(), productRequest.getDiscount_percentage(), productRequest.getId_category(), productRequest.getId_user());
         return ResponseEntity.created(URI.create("/products/" + result.getId_product())).body(result);
     }
 
-    @DeleteMapping("/{productId}")
-    public ResponseEntity<String> deleteProduct(@PathVariable Long productId) {
-        boolean deleted = productoService.deleteProduct(productId);
-        if (deleted){
-            return ResponseEntity.ok("El producto fue eliminado correctamente");
-        }
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("El producto no existe");
+    @PatchMapping("/{id}")
+    public ResponseEntity<Product> patchProduct(@PathVariable Long id, @RequestBody ProductPatchRequest request) {
+        return ResponseEntity.ok(productService.patchProduct(id, request));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteProduct(@PathVariable Long id) {
+        productService.deleteProduct(id);
+        return ResponseEntity.noContent().build();
     }
 }

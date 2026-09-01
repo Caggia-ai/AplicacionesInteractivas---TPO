@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import com.uade.tpo.marketplace.entity.Product;
 import com.uade.tpo.marketplace.entity.User;
+import com.uade.tpo.marketplace.entity.dto.ProductPatchRequest;
 import com.uade.tpo.marketplace.entity.Category;
 import com.uade.tpo.marketplace.repository.CategoryRepository;
 import com.uade.tpo.marketplace.repository.UserRepository;
@@ -20,7 +21,7 @@ import com.uade.tpo.marketplace.repository.ProductRepository;
 public class ProductServiceImpl implements ProductService {
 
     @Autowired
-    private ProductRepository productoRepository;
+    private ProductRepository productRepository;
 
     @Autowired
     private UserRepository userRepository;
@@ -29,15 +30,15 @@ public class ProductServiceImpl implements ProductService {
     private CategoryRepository categoryRepository;
 
     public Page<Product> getProducts(PageRequest pageable) {
-        return productoRepository.findAll(pageable);
+        return productRepository.findByStateTrue(pageable);
     }
 
     public Optional<Product> getProductById(Long productId) {
-        return productoRepository.findById(productId);
+        return productRepository.findByIdAndState(productId, true);
     }
 
     public Product createProduct(String name, String description, int price, int stock, int discount_percentage, Long id_category, Long id_user) throws ProductDuplicateException {
-        Optional<Product> productos = productoRepository.findByName(name);
+        Optional<Product> productos = productRepository.findByName(name);
         if (productos.isEmpty()){
             Category category = categoryRepository.findById(id_category).orElseThrow(() -> new RuntimeException("Categoría no encontrada"));
                 
@@ -48,17 +49,39 @@ public class ProductServiceImpl implements ProductService {
             product.setCategory(category);
             product.setUser(user);
             
-            return productoRepository.save(product);
+            return productRepository.save(product);
         }
         throw new ProductDuplicateException();
     }
 
-    public boolean deleteProduct(Long productId) {
-        Optional<Product> product  = productoRepository.findById(productId);
-        if (product.isEmpty()){
-            return false;
+    public Product patchProduct(Long id, ProductPatchRequest request) {
+        Product product = productRepository.findById(id).orElseThrow(() -> new RuntimeException("Producto no encontrado"));
+
+        if (request.getName() != null) {
+            product.setName(request.getName());
         }
-        productoRepository.deleteById(productId);
-        return true;
+        if (request.getDescription() != null) {
+            product.setDescription(request.getDescription());
+        }
+        if (request.getPrice() != null) {
+            product.setPrice(request.getPrice());
+        }
+        if (request.getStock() != null) {
+            product.setStock(request.getStock());
+        }
+        if (request.getDiscount_percentage() != null) {
+            product.setDiscount_percentage(request.getDiscount_percentage());
+        }
+
+        return productRepository.save(product);
+    }
+
+    public void deleteProduct(Long id) {
+    Product product = productRepository.findById(id)
+        .orElseThrow(() -> new RuntimeException("Producto no encontrado"));
+        
+    product.setState(false); 
+    
+    productRepository.save(product);
     }
 }

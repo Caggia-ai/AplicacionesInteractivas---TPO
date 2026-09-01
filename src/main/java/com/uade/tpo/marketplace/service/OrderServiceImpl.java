@@ -36,6 +36,9 @@ public class OrderServiceImpl implements OrderService {
 
         for (CartItem cartItem : cart.getProductosCarrito()) {
             Product product = cartItem.getProduct();
+            if (!product.isState()) {
+                throw new RuntimeException("El producto " + product.getName() + " ya no está disponible para la compra.");
+            }
 
             if (product.getStock() < cartItem.getQuantity()) {
                 throw new RuntimeException("Sin stock suficiente para el producto: " + product.getName());

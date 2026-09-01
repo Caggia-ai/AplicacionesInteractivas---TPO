@@ -21,6 +21,9 @@ public class CartItemServiceImpl implements CartItemService {
 public Cart addItemToCart(Long userId, Long productId, int quantityToAdd) {
     Product product = productRepository.findById(productId)
         .orElseThrow(() -> new RuntimeException("Producto no encontrado"));
+    if (!product.isState()) {
+        throw new RuntimeException("El producto ya no está disponible.");
+    }
     Cart cart = cartRepository.findByUserId(userId)
         .orElseThrow(() -> new RuntimeException("El usuario no tiene carrito"));
 
@@ -34,6 +37,7 @@ public Cart addItemToCart(Long userId, Long productId, int quantityToAdd) {
             return newItem;
         });
 
+    
     item.setQuantity(item.getQuantity() + quantityToAdd);
     cartItemRepository.save(item);
 

@@ -7,6 +7,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 
 import com.uade.tpo.marketplace.entity.Product;
+import com.uade.tpo.marketplace.entity.dto.ProductPatchRequest;
 import com.uade.tpo.marketplace.exceptions.ProductDuplicateException;
 
 public interface ProductService {
@@ -16,5 +17,7 @@ public interface ProductService {
 
     public Product createProduct(String nombre, String descripcion, int precio, int stock, int porcentaje_descuento, Long id_category, Long id_user) throws ProductDuplicateException;
 
-    public boolean deleteProduct(Long productId);
+    public Product patchProduct(Long id, ProductPatchRequest request);
+
+    public void deleteProduct(Long productId);
 }
