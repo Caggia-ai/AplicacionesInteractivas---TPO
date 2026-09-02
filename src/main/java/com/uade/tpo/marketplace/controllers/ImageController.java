@@ -36,6 +36,7 @@ public class ImageController {
         response.setId(id);
         response.setFile(encodedString);
         return ResponseEntity.ok().body(response);
+    }
 
     @DeleteMapping
     public ResponseEntity<String> deleteImage(@RequestParam("id") Long id) {
