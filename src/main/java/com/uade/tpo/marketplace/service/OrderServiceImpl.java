@@ -1,6 +1,8 @@
 package com.uade.tpo.marketplace.service;
 
 import java.time.LocalDate;
+import java.util.List;
+import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.uade.tpo.marketplace.entity.*;
@@ -60,5 +62,14 @@ public class OrderServiceImpl implements OrderService {
         cartRepository.save(cart);
 
         return order;
+    }
+    @Override
+    public List<Order> getOrdersByUserId(Long userId) {
+        return orderRepository.findByUserId(userId);
+    }
+
+    @Override
+    public Optional<Order> getOrderById(Long orderId) {
+        return orderRepository.findById(orderId);
     }
 }

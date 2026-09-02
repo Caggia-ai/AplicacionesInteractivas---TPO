@@ -14,7 +14,7 @@ import jakarta.persistence.JoinColumn;
 public class OrderItem {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id_order_item;
+    private Long id_order_item;
     
 
     @Column
