@@ -40,4 +40,14 @@ public class ImageServiceImpl implements ImageService {
     public Image viewById(Long id) {
         return imageRepository.findById(id).orElseThrow(() -> new RuntimeException("Imagen no encontrada"));
     }
+
+    @Override
+    public void deleteImage(Long id) {
+        if (!imageRepository.existsById(id)) {
+            throw new RuntimeException("Imagen no encontrada");
+        }
+
+        imageRepository.deleteById(id);
+    }
 }
+    
