@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import com.uade.tpo.marketplace.entity.Cart;
 import com.uade.tpo.marketplace.entity.User;
+import com.uade.tpo.marketplace.entity.dto.UserPatchRequest;
 import com.uade.tpo.marketplace.exceptions.UserDuplicateException;
 import com.uade.tpo.marketplace.repository.CartRepository;
 import com.uade.tpo.marketplace.repository.UserRepository;
@@ -48,22 +49,32 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User updateUser(Long userId, String username, String name, String surname, String email, String password, String role) throws UserDuplicateException {
+    public User patchUser(Long userId, UserPatchRequest request) throws UserDuplicateException {
 
         User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
 
-        Optional<User> existingUser = userRepository.findByUsername(username);
-    
-        if (existingUser.isPresent() && !existingUser.get().getId_user().equals(userId)) {
-            throw new UserDuplicateException();
+        if (request.getUsername() != null) {
+            Optional<User> existingUser = userRepository.findByUsername(request.getUsername());
+            if (existingUser.isPresent() && !existingUser.get().getId_user().equals(userId)) {
+                throw new UserDuplicateException();
+            }
+            user.setUsername(request.getUsername());
         }
-
-        user.setUsername(username);
-        user.setName(name);
-        user.setSurname(surname);
-        user.setEmail(email);
-        user.setPassword(password);
-        user.setRole(role);
+        if (request.getName() != null) {
+            user.setName(request.getName());
+        }
+        if (request.getSurname() != null) {
+            user.setSurname(request.getSurname());
+        }
+        if (request.getEmail() != null) {
+            user.setEmail(request.getEmail());
+        }
+        if (request.getPassword() != null) {
+            user.setPassword(request.getPassword());
+        }
+        if (request.getRole() != null) {
+            user.setRole(request.getRole());
+        }
         
         return userRepository.save(user);
     }
