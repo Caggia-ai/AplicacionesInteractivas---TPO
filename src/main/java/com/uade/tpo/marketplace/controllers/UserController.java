@@ -10,7 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.uade.tpo.marketplace.entity.User;
 import com.uade.tpo.marketplace.entity.dto.UserRequest;
+import com.uade.tpo.marketplace.entity.dto.UserPatchRequest;
 import com.uade.tpo.marketplace.exceptions.UserDuplicateException;
 import com.uade.tpo.marketplace.service.UserService;
 
@@ -60,17 +61,9 @@ public class UserController {
         return ResponseEntity.created(URI.create("/users/" + result.getId_user())).body(result);
     }
 
-    @PutMapping("/{userId}")
-    public ResponseEntity<User> updateUser(@PathVariable Long userId, @RequestBody UserRequest request) throws UserDuplicateException{
-        User result = userService.updateUser(
-            userId,
-            request.getUsername(),
-            request.getName(),
-            request.getSurname(),
-            request.getEmail(),
-            request.getPassword(),
-            request.getRole()
-        );
-        return ResponseEntity.ok(result);
+    @PatchMapping("/{userId}")
+    public ResponseEntity<UserResponse> patchUser(@PathVariable Long userId, @RequestBody UserPatchRequest request) throws UserDuplicateException{
+        User result = userService.patchUser(userId, request);
+        return ResponseEntity.ok(UserResponse.fromEntity(result));
     }
 }
