@@ -13,5 +13,5 @@ public interface UserService {
     public Page<User> getUsers(PageRequest pageRequest);
     public Optional<User> getUserById(Long userId);
     public User createUser(String username, String name, String surname, String email, String password, String role) throws UserDuplicateException;
-    public User updateUser(Long userId, UserPatchRequest request) throws UserDuplicateException;
+    public User patchUser(Long userId, UserPatchRequest request) throws UserDuplicateException;
 }
