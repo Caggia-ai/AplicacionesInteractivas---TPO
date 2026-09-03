@@ -62,8 +62,8 @@ public class UserController {
     }
 
     @PatchMapping("/{userId}")
-    public ResponseEntity<UserResponse> patchUser(@PathVariable Long userId, @RequestBody UserPatchRequest request) throws UserDuplicateException{
+    public ResponseEntity<User> patchUser(@PathVariable Long userId, @RequestBody UserPatchRequest request) throws UserDuplicateException{
         User result = userService.patchUser(userId, request);
-        return ResponseEntity.ok(UserResponse.fromEntity(result));
+        return ResponseEntity.ok(result);
     }
 }
