@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.*;
 
 import com.uade.tpo.marketplace.entity.Order;
 import com.uade.tpo.marketplace.entity.dto.OrderRequest;
+import com.uade.tpo.marketplace.entity.dto.OrderResponse;
 import com.uade.tpo.marketplace.service.OrderService;
 
 import java.util.List;
@@ -25,20 +26,25 @@ public class OrderController {
     }
 
     @GetMapping("/user/{userId}")
-    public ResponseEntity<List<Order>> getOrdersByUser(@PathVariable Long userId) {
+    public ResponseEntity<List<OrderResponse>> getOrdersByUser(@PathVariable Long userId) {
         List<Order> orders = orderService.getOrdersByUserId(userId);
         if (orders.isEmpty()) {
             return ResponseEntity.noContent().build();
         }
-        return ResponseEntity.ok(orders);
+        
+        // Mapeamos la lista completa de entidades a DTOs usando Streams de Java
+        List<OrderResponse> responseList = orders.stream()
+                                                 .map(OrderResponse::fromEntity)
+                                                 .toList();
+                                                 
+        return ResponseEntity.ok(responseList);
     }
 
     @GetMapping("/{orderId}")
-    public ResponseEntity<Order> getOrderById(@PathVariable Long orderId) {
+    public ResponseEntity<OrderResponse> getOrderById(@PathVariable Long orderId) {
         Optional<Order> order = orderService.getOrderById(orderId);
-        if (order.isPresent()) {
-            return ResponseEntity.ok(order.get());
-        }
-        return ResponseEntity.notFound().build();
+        
+        return order.map(o -> ResponseEntity.ok(OrderResponse.fromEntity(o)))
+                    .orElseGet(() -> ResponseEntity.notFound().build());
     }
 }

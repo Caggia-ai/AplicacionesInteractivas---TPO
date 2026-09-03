@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.uade.tpo.marketplace.entity.User;
 import com.uade.tpo.marketplace.entity.dto.UserRequest;
+import com.uade.tpo.marketplace.entity.dto.UserResponse;
 import com.uade.tpo.marketplace.entity.dto.UserPatchRequest;
 import com.uade.tpo.marketplace.exceptions.UserDuplicateException;
 import com.uade.tpo.marketplace.service.UserService;
@@ -30,22 +31,25 @@ public class UserController {
     private UserService userService;
 
     @GetMapping
-    public ResponseEntity<Page<User>> getUsers(
+    public ResponseEntity<Page<UserResponse>> getUsers(
             @RequestParam(required = false) Integer page,
             @RequestParam(required = false) Integer size) {
-        if (page == null || size == null)
-            return ResponseEntity.ok(userService.getUsers(PageRequest.of(0, Integer.MAX_VALUE)));
-        return ResponseEntity.ok(userService.getUsers(PageRequest.of(page, size)));
+        
+        PageRequest pageRequest = (page == null || size == null) 
+            ? PageRequest.of(0, Integer.MAX_VALUE) 
+            : PageRequest.of(page, size);
+            
+        Page<UserResponse> userPage = userService.getUsers(pageRequest)
+                                                 .map(UserResponse::fromEntity);
+        return ResponseEntity.ok(userPage);
     }
 
     @GetMapping("/{userId}")
-    public ResponseEntity<User> getUserById(@PathVariable Long userId) {
+    public ResponseEntity<UserResponse> getUserById(@PathVariable Long userId) {
         Optional<User> result = userService.getUserById(userId);
         
-        if (result.isPresent()) {
-            return ResponseEntity.ok(result.get());
-        }
-        return ResponseEntity.noContent().build();
+        return result.map(user -> ResponseEntity.ok(UserResponse.fromEntity(user)))
+                     .orElseGet(() -> ResponseEntity.noContent().build());
     }
 
     @PostMapping

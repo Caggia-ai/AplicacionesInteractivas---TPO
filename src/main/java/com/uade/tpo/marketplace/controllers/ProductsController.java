@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.uade.tpo.marketplace.entity.Product;
 import com.uade.tpo.marketplace.entity.dto.ProductPatchRequest;
 import com.uade.tpo.marketplace.entity.dto.ProductRequest;
+import com.uade.tpo.marketplace.entity.dto.ProductResponse;
 import com.uade.tpo.marketplace.exceptions.ProductDuplicateException;
 import com.uade.tpo.marketplace.service.ProductService;
 
@@ -32,21 +33,27 @@ public class ProductsController {
     private ProductService productService;
 
     @GetMapping
-    public ResponseEntity<Page<Product>> getProducts(
+    public ResponseEntity<Page<ProductResponse>> getProducts(
             @RequestParam(required = false) Integer page,
             @RequestParam(required = false) Integer size) {
-        if (page == null || size == null)
-            return ResponseEntity.ok(productService.getProducts(PageRequest.of(0, Integer.MAX_VALUE)));
-        return ResponseEntity.ok(productService.getProducts(PageRequest.of(page, size)));
+        
+        PageRequest pageRequest = (page == null || size == null) 
+            ? PageRequest.of(0, Integer.MAX_VALUE) 
+            : PageRequest.of(page, size);
+            
+        // Obtenemos la página de entidades y la mapeamos a página de DTOs
+        Page<ProductResponse> productPage = productService.getProducts(pageRequest)
+                                                          .map(ProductResponse::fromEntity);
+        return ResponseEntity.ok(productPage);
     }
 
     @GetMapping("/{productId}")
-    public ResponseEntity<Product> getProductById(@PathVariable Long productId) {
+    public ResponseEntity<ProductResponse> getProductById(@PathVariable Long productId) {
         Optional<Product> result = productService.getProductById(productId);
-        if (result.isPresent())
-            return ResponseEntity.ok(result.get());
-
-        return ResponseEntity.noContent().build();
+        
+        // Si está presente, lo mapeamos. Si no, devolvemos 404 Not Found (o 204 No Content)
+        return result.map(product -> ResponseEntity.ok(ProductResponse.fromEntity(product)))
+                     .orElseGet(() -> ResponseEntity.noContent().build());
     }
 
     @PostMapping

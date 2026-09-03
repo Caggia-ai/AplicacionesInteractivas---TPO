@@ -5,6 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import com.uade.tpo.marketplace.entity.Cart;
+import com.uade.tpo.marketplace.entity.dto.CartResponse;
 import com.uade.tpo.marketplace.service.CartService;
 
 @RestController
@@ -13,8 +14,9 @@ public class CartController {
     @Autowired private CartService cartService;
 
     @GetMapping("/user/{userId}")
-    public ResponseEntity<Cart> getCart(@PathVariable Long userId) {
-        return ResponseEntity.ok(cartService.getCartByUserId(userId));
+    public ResponseEntity<CartResponse> getCart(@PathVariable Long userId) {
+        Cart cart = cartService.getCartByUserId(userId);
+        return ResponseEntity.ok(CartResponse.fromEntity(cart));
     }
 
     @DeleteMapping("/user/{userId}/clear")

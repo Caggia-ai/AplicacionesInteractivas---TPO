@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.uade.tpo.marketplace.entity.Category;
 import com.uade.tpo.marketplace.entity.dto.CategoryRequest;
+import com.uade.tpo.marketplace.entity.dto.CategoryResponse;
 import com.uade.tpo.marketplace.exceptions.CategoryDuplicateException;
 import com.uade.tpo.marketplace.service.CategoryService;
 
@@ -29,21 +30,24 @@ public class CategoriesController {
     private CategoryService categoryService;
 
     @GetMapping
-    public ResponseEntity<Page<Category>> getCategories(
+    public ResponseEntity<Page<CategoryResponse>> getCategories(
             @RequestParam(required = false) Integer page,
             @RequestParam(required = false) Integer size) {
-        if (page == null || size == null)
-            return ResponseEntity.ok(categoryService.getCategories(PageRequest.of(0, Integer.MAX_VALUE)));
-        return ResponseEntity.ok(categoryService.getCategories(PageRequest.of(page, size)));
+        
+        PageRequest pageRequest = (page == null || size == null) 
+            ? PageRequest.of(0, Integer.MAX_VALUE) 
+            : PageRequest.of(page, size);
+            
+        Page<CategoryResponse> categoryPage = categoryService.getCategories(pageRequest)
+                                                             .map(CategoryResponse::fromEntity);
+        return ResponseEntity.ok(categoryPage);
     }
 
     @GetMapping("/{categoryId}")
-    public ResponseEntity<Category> getCategoryById(@PathVariable Long categoryId) {
+    public ResponseEntity<CategoryResponse> getCategoryById(@PathVariable Long categoryId) {
         Optional<Category> result = categoryService.getCategoryById(categoryId);
-        if (result.isPresent())
-            return ResponseEntity.ok(result.get());
-
-        return ResponseEntity.noContent().build();
+        return result.map(category -> ResponseEntity.ok(CategoryResponse.fromEntity(category)))
+                     .orElseGet(() -> ResponseEntity.noContent().build());
     }
 
     @PostMapping

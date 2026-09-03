@@ -5,6 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import com.uade.tpo.marketplace.entity.OrderItem;
+import com.uade.tpo.marketplace.entity.dto.OrderItemResponse;
 import com.uade.tpo.marketplace.service.OrderItemService;
 
 import java.util.List;
@@ -17,23 +18,24 @@ public class OrderItemController {
     @Autowired
     private OrderItemService orderItemService;
 
-    // Endpoint clave para el Frontend: Sirve para mostrar el detalle de una compra en el "Historial de Órdenes"
+    // Sirve para mostrar el detalle de una compra en el "Historial de Órdenes"
     @GetMapping("/order/{orderId}")
-    public ResponseEntity<List<OrderItem>> getItemsByOrderId(@PathVariable Long orderId) {
+    public ResponseEntity<List<OrderItemResponse>> getItemsByOrderId(@PathVariable Long orderId) { // Pasamos orderId a Long
         List<OrderItem> items = orderItemService.getItemsByOrderId(orderId);
         if (items.isEmpty()) {
             return ResponseEntity.noContent().build();
         }
-        return ResponseEntity.ok(items);
+        
+        List<OrderItemResponse> responseList = items.stream()
+                                                    .map(OrderItemResponse::fromEntity)
+                                                    .toList();
+        return ResponseEntity.ok(responseList);
     }
 
-    // Endpoint para consultar un ítem específico por su ID
     @GetMapping("/{itemId}")
-    public ResponseEntity<OrderItem> getItemById(@PathVariable Long itemId) {
+    public ResponseEntity<OrderItemResponse> getItemById(@PathVariable Long itemId) { // Pasamos itemId a Long
         Optional<OrderItem> item = orderItemService.getItemById(itemId);
-        if (item.isPresent()) {
-            return ResponseEntity.ok(item.get());
-        }
-        return ResponseEntity.notFound().build();
+        return item.map(orderItem -> ResponseEntity.ok(OrderItemResponse.fromEntity(orderItem)))
+                   .orElseGet(() -> ResponseEntity.notFound().build());
     }
 }
