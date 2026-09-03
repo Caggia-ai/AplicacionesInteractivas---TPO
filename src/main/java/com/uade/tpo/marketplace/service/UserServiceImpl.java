@@ -30,7 +30,6 @@ public class UserServiceImpl implements UserService {
         return userRepository.findById(userId);
     }
 
-    
     public User createUser(String username, String name, String surname, String email, String password, String role) throws UserDuplicateException {
         
        if (userRepository.findByUsername(username).isEmpty()) {
@@ -46,5 +45,26 @@ public class UserServiceImpl implements UserService {
             return savedUser;
         }
         throw new UserDuplicateException();
+    }
+
+    @Override
+    public User updateUser(Long userId, String username, String name, String surname, String email, String password, String role) throws UserDuplicateException {
+
+        User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+
+        Optional<User> existingUser = userRepository.findByUsername(username);
+    
+        if (existingUser.isPresent() && !existingUser.get().getId_user().equals(userId)) {
+            throw new UserDuplicateException();
+        }
+
+        user.setUsername(username);
+        user.setName(name);
+        user.setSurname(surname);
+        user.setEmail(email);
+        user.setPassword(password);
+        user.setRole(role);
+        
+        return userRepository.save(user);
     }
 }
