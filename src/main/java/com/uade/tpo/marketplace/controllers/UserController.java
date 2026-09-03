@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -57,5 +58,19 @@ public class UserController {
             request.getRole()
         );
         return ResponseEntity.created(URI.create("/users/" + result.getId_user())).body(result);
+    }
+
+    @PutMapping("/{userId}")
+    public ResponseEntity<User> updateUser(@PathVariable Long userId, @RequestBody UserRequest request) throws UserDuplicateException{
+        User result = userService.updateUser(
+            userId,
+            request.getUsername(),
+            request.getName(),
+            request.getSurname(),
+            request.getEmail(),
+            request.getPassword(),
+            request.getRole()
+        );
+        return ResponseEntity.ok(result);
     }
 }
