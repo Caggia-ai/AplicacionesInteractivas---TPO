@@ -7,12 +7,12 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import com.uade.tpo.demo.controllers.auth.AuthenticationRequest;
-import com.uade.tpo.demo.controllers.auth.AuthenticationResponse;
-import com.uade.tpo.demo.controllers.auth.RegisterRequest;
-import com.uade.tpo.demo.controllers.config.JwtService;
-import com.uade.tpo.demo.entity.User;
-import com.uade.tpo.demo.repository.UserRepository;
+import com.uade.tpo.marketplace.controllers.auth.AuthenticationRequest;
+import com.uade.tpo.marketplace.controllers.auth.AuthenticationResponse;
+import com.uade.tpo.marketplace.controllers.auth.RegisterRequest;
+import com.uade.tpo.marketplace.controllers.config.JwtService;
+import com.uade.tpo.marketplace.entity.User;
+import com.uade.tpo.marketplace.repository.UserRepository;
 
 import lombok.RequiredArgsConstructor;
 
