@@ -2,9 +2,11 @@ package com.uade.tpo.marketplace.service;
 
 
 import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.uade.tpo.marketplace.entity.Cart;
@@ -20,21 +22,29 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private UserRepository userRepository;
 
-    @Autowired 
+    @Autowired
     private CartRepository cartRepository;
 
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
+    @Override
     public Page<User> getUsers(PageRequest pageable) {
         return userRepository.findAll(pageable);
     }
-
+    
+    @Override 
     public Optional<User> getUserById(Long userId) {
         return userRepository.findById(userId);
     }
 
+    @Override 
     public User createUser(String username, String name, String surname, String email, String password, String role) throws UserDuplicateException {
         
        if (userRepository.findByUsername(username).isEmpty()) {
-            User user = new User(username, name, surname, email, password, role);
+            // La contraseña se guarda siempre encriptada con BCrypt: antes se guardaba
+            // en texto plano y el login (que usa BCryptPasswordEncoder) nunca hubiera funcionado.
+            User user = new User(username, name, surname, email, passwordEncoder.encode(password), role);
             User savedUser = userRepository.save(user);
 
             Cart cart = new Cart();
@@ -70,7 +80,7 @@ public class UserServiceImpl implements UserService {
             user.setEmail(request.getEmail());
         }
         if (request.getPassword() != null) {
-            user.setPassword(request.getPassword());
+            user.setPassword(passwordEncoder.encode(request.getPassword()));
         }
         if (request.getRole() != null) {
             user.setRole(request.getRole());
