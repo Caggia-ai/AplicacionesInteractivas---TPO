@@ -53,7 +53,7 @@ public class UserController {
     }
 
     @PostMapping
-    public ResponseEntity<Object> createUser(@RequestBody UserRequest request) throws UserDuplicateException{
+    public ResponseEntity<UserResponse> createUser(@RequestBody UserRequest request) throws UserDuplicateException{
         User result = userService.createUser(
             request.getUsername(),
             request.getName(),
@@ -62,12 +62,16 @@ public class UserController {
             request.getPassword(),
             request.getRole()
         );
-        return ResponseEntity.created(URI.create("/users/" + result.getId_user())).body(result);
+        // Antes se devolvía la entidad User completa, que incluía la contraseña
+        // (hasheada, pero igual no debería viajar en la respuesta). Usamos el DTO.
+        return ResponseEntity.created(URI.create("/users/" + result.getId_user()))
+                              .body(UserResponse.fromEntity(result));
     }
 
     @PatchMapping("/{userId}")
-    public ResponseEntity<User> patchUser(@PathVariable Long userId, @RequestBody UserPatchRequest request) throws UserDuplicateException{
+    public ResponseEntity<UserResponse> patchUser(@PathVariable Long userId, @RequestBody UserPatchRequest request) throws UserDuplicateException{
         User result = userService.patchUser(userId, request);
-        return ResponseEntity.ok(result);
+        return ResponseEntity.ok(UserResponse.fromEntity(result));
     }
 }
+
