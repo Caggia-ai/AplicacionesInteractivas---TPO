@@ -5,7 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import com.uade.tpo.marketplace.entity.CartItem;
 
-public interface CartItemRepository extends JpaRepository<CartItem, Integer> {
+public interface CartItemRepository extends JpaRepository<CartItem, Long> {
     
     @Query("SELECT ci FROM CartItem ci WHERE ci.cart.id_cart = ?1 AND ci.product.id_product = ?2")
     Optional<CartItem> findByCartIdAndProductId(Long cartId, Long productId);
