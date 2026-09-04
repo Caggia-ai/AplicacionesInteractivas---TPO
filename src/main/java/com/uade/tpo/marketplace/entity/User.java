@@ -8,11 +8,9 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
+import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import lombok.Data;
@@ -23,7 +21,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 @Entity
 public class User implements UserDetails {
 
-    public User(String username, String name, String surname, String email, String password, Role role) {
+    public User(String username, String name, String surname, String email, String password, String role) {
         this.username = username;
         this.name = name;
         this.surname = surname;
@@ -38,26 +36,18 @@ public class User implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id_user;
-
     @Column(unique = true)
     private String username;
-
     @Column
     private String name;
-
     @Column
     private String surname;
-
     @Column
     private String email;
-
     @Column
     private String password;
-
-    @Enumerated(EnumType.STRING)
     @Column
-    private Role role;
-
+    private String role;
     @Column
     private boolean state;
 
@@ -73,7 +63,7 @@ public class User implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority(role.name()));
+        return List.of(new SimpleGrantedAuthority(role));
     }
 
     @Override
@@ -100,9 +90,4 @@ public class User implements UserDetails {
     public boolean isEnabled() {
         return state;
     }
-}
-
-    @JsonIgnore
-    @OneToMany(mappedBy = "user")
-    private List<Product> products;
 }
