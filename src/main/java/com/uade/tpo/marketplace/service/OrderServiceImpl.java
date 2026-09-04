@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.stereotype.Service;
 import com.uade.tpo.marketplace.entity.*;
 import com.uade.tpo.marketplace.repository.*;
@@ -19,6 +20,7 @@ public class OrderServiceImpl implements OrderService {
     @Autowired private UserRepository userRepository;
 
     @Override
+    @Transactional
     public Order createOrderFromCart(Long userId, String paymentMethod, String deliveryMethod) {
         User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
             
