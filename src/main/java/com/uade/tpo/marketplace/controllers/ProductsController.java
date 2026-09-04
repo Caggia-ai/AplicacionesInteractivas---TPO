@@ -57,15 +57,18 @@ public class ProductsController {
     }
 
     @PostMapping
-    public ResponseEntity<Object> createProduct(@RequestBody ProductRequest productRequest)
+    public ResponseEntity<ProductResponse> createProduct(@RequestBody ProductRequest productRequest)
             throws ProductDuplicateException {
         Product result = productService.createProduct(productRequest.getName(),productRequest.getDescription(), productRequest.getPrice(), productRequest.getStock(), productRequest.getDiscount_percentage(), productRequest.getId_category(), productRequest.getId_user());
-        return ResponseEntity.created(URI.create("/products/" + result.getId_product())).body(result);
+        // Antes se devolvía la entidad Product completa, que trae el User (vendedor)
+        // anidado -incluida su contraseña-. Usamos el DTO, igual que en el GET.
+        return ResponseEntity.created(URI.create("/products/" + result.getId_product()))
+                              .body(ProductResponse.fromEntity(result));
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<Product> patchProduct(@PathVariable Long id, @RequestBody ProductPatchRequest request) {
-        return ResponseEntity.ok(productService.patchProduct(id, request));
+    public ResponseEntity<ProductResponse> patchProduct(@PathVariable Long id, @RequestBody ProductPatchRequest request) {
+        return ResponseEntity.ok(ProductResponse.fromEntity(productService.patchProduct(id, request)));
     }
 
     @DeleteMapping("/{id}")
