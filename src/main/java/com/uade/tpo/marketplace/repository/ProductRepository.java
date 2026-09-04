@@ -23,6 +23,6 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     @Query(value = "select p from Product p where p.state = true")
     Page<Product> findByStateTrue(Pageable pageable);
 
-    @Query(value = "select p from Product p where p.id = ?1 and p.state = true")
+    @Query(value = "select p from Product p where p.id_product = ?1 and p.state = true")
     Optional<Product> findByIdAndState(Long id, Boolean state);
 }
