@@ -8,7 +8,8 @@ public class ProductResponse {
     private Long id;
     private String name;
     private String description;
-    private int price;
+    private int price; // Precio original
+    private int finalPrice; // Precio con el descuento ya aplicado
     private int stock;
     private int discountPercentage;
     private String categoryName;
@@ -23,7 +24,10 @@ public class ProductResponse {
         dto.setStock(product.getStock());
         dto.setDiscountPercentage(product.getDiscount_percentage());
         
-        // Evitamos mandar objetos enteros, solo la info necesaria para el front
+        // --- Cálculo para el frontend ---
+        int descuentoApli = (product.getPrice() * product.getDiscount_percentage()) / 100;
+        dto.setFinalPrice(product.getPrice() - descuentoApli);
+        
         if (product.getCategory() != null) {
             dto.setCategoryName(product.getCategory().getDescription());
         }

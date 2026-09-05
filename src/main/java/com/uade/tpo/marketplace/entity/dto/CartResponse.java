@@ -15,17 +15,25 @@ public class CartResponse {
     public static CartResponse fromEntity(Cart cart) {
         CartResponse dto = new CartResponse();
         dto.setId(cart.getId_cart());
-        dto.setTotal(cart.getTotal());
         dto.setState(cart.isState());
         
-        // Transformamos la lista de CartItem a CartItemResponse
+        int totalCalculado = 0;
+        
         if (cart.getProductosCarrito() != null) {
-            dto.setItems(cart.getProductosCarrito().stream()
+            List<CartItemResponse> itemsDto = cart.getProductosCarrito().stream()
                              .map(CartItemResponse::fromEntity)
-                             .toList());
+                             .toList();
+            dto.setItems(itemsDto);
+            
+            // Sumamos los subtotales de todos los items mapeados
+            for(CartItemResponse i : itemsDto) {
+                totalCalculado += i.getSubtotal();
+            }
         } else {
-            dto.setItems(new ArrayList<>()); // Evita que devuelva null si está vacío
+            dto.setItems(new ArrayList<>()); 
         }
+        
+        dto.setTotal(totalCalculado); // Asignamos el total dinámico al JSON
         return dto;
     }
 }

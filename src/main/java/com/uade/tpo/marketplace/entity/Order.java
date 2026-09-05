@@ -10,6 +10,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import java.time.LocalDate;
 
 import java.util.List;
 
@@ -26,7 +27,7 @@ public class Order {
     @Column
     private String payment_method;
     @Column
-    private String date;
+    private LocalDate date;
     @Column
     private int total;
     @Column

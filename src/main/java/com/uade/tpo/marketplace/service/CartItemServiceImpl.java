@@ -12,14 +12,13 @@ import com.uade.tpo.marketplace.repository.CartItemRepository;
 import com.uade.tpo.marketplace.repository.CartRepository;
 import com.uade.tpo.marketplace.repository.ProductRepository;
 
-
 @Service
 public class CartItemServiceImpl implements CartItemService {
-@Autowired private CartItemRepository cartItemRepository;
-@Autowired private CartRepository cartRepository;
-@Autowired private ProductRepository productRepository;
+    @Autowired private CartItemRepository cartItemRepository;
+    @Autowired private CartRepository cartRepository;
+    @Autowired private ProductRepository productRepository;
 
-@Transactional
+    @Transactional
 public Cart addItemToCart(Long userId, Long productId, int quantityToAdd) {
     if (quantityToAdd <= 0) {
         throw new RuntimeException("La cantidad a agregar debe ser mayor a cero.");
@@ -39,13 +38,11 @@ public Cart addItemToCart(Long userId, Long productId, int quantityToAdd) {
             newItem.setCart(cart);
             newItem.setProduct(product);
             newItem.setQuantity(0);
-            newItem.setUnit_price(product.getPrice());
-            return newItem;
+            return newItem; // Ya no seteamos unit_price aquí
         });
 
     int newQuantity = item.getQuantity() + quantityToAdd;
-    // Antes no se validaba el stock acá: se podía cargar el carrito con más
-    // unidades de las que había en stock y el error recién aparecía al comprar.
+    
     if (newQuantity > product.getStock()) {
         throw new RuntimeException("No hay suficiente stock de " + product.getName()
             + " (disponible: " + product.getStock() + ").");
@@ -54,22 +51,18 @@ public Cart addItemToCart(Long userId, Long productId, int quantityToAdd) {
     item.setQuantity(newQuantity);
     cartItemRepository.save(item);
 
-    cart.setTotal(cart.getTotal() + (item.getUnit_price() * quantityToAdd));
-    return cartRepository.save(cart);
+    // Ya no actualizamos el total del Cart, solo retornamos el carrito
+    return cart; 
 }
 
 @Transactional
 public Optional<CartItem> removeItemFromCart(Long userId, Long productId) {
-    
     Cart cart = cartRepository.findByUserId(userId)
         .orElseThrow(() -> new RuntimeException("Error crítico: el usuario no tiene carrito asignado"));
         
     CartItem item = cartItemRepository.findByCartIdAndProductId(cart.getId_cart(), productId)
         .orElseThrow(() -> new RuntimeException("Error crítico: el producto no está en el carrito"));
         
-    cart.setTotal(cart.getTotal() - item.getUnit_price());
-    cartRepository.save(cart);
-
     item.setQuantity(item.getQuantity() - 1); 
 
     if (item.getQuantity() <= 0) {
@@ -80,5 +73,4 @@ public Optional<CartItem> removeItemFromCart(Long userId, Long productId) {
     cartItemRepository.save(item);
     return Optional.of(item);
 }
-    
 }

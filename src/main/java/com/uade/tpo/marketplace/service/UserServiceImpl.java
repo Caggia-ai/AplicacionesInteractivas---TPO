@@ -49,7 +49,7 @@ public class UserServiceImpl implements UserService {
 
             Cart cart = new Cart();
             cart.setUser(savedUser);
-            cart.setTotal(0);
+            //cart.setTotal(0);
             cart.setState(true);
             cartRepository.save(cart);
             

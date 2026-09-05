@@ -23,8 +23,8 @@ public class Cart {
     @JoinColumn(name = "id_user", nullable = false)
     private User user;
 
-    @Column
-    private int total;
+    //@Column
+    //private int total;
     @Column
     private String expiration;
     @Column

@@ -1,6 +1,7 @@
 package com.uade.tpo.marketplace.entity.dto;
 
 import com.uade.tpo.marketplace.entity.Order;
+import java.time.LocalDate;
 import lombok.Data;
 
 @Data
@@ -8,7 +9,7 @@ public class OrderResponse {
     private Long id;
     private String paymentMethod;
     private String deliveryMethod;
-    private String date;
+    private LocalDate date;
     private int total;
     private String buyerUsername;
 

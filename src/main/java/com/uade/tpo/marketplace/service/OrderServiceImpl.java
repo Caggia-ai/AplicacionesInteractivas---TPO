@@ -22,21 +22,25 @@ public class OrderServiceImpl implements OrderService {
     @Override
     @Transactional
     public Order createOrderFromCart(Long userId, String paymentMethod, String deliveryMethod) {
-        User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+        User user = userRepository.findById(userId)
+            .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
             
-        Cart cart = cartRepository.findByUserId(userId).orElseThrow(() -> new RuntimeException("El usuario no tiene carrito activo"));
+        Cart cart = cartRepository.findByUserId(userId)
+            .orElseThrow(() -> new RuntimeException("El usuario no tiene carrito activo"));
 
         if (cart.getProductosCarrito() == null || cart.getProductosCarrito().isEmpty()) {
             throw new RuntimeException("No se puede comprar con el carrito vacío");
         }
 
+        // Creamos la orden primero para tener su ID
         Order order = new Order();
         order.setUser(user);
         order.setPayment_method(paymentMethod);
         order.setDelivery_method(deliveryMethod);
-        order.setDate(LocalDate.now().toString()); 
-        order.setTotal(cart.getTotal());
+        order.setDate(LocalDate.now());
         order = orderRepository.save(order);
+
+        int totalDeLaOrden = 0; // Vamos a ir acumulando el total
 
         for (CartItem cartItem : cart.getProductosCarrito()) {
             Product product = cartItem.getProduct();
@@ -48,20 +52,31 @@ public class OrderServiceImpl implements OrderService {
                 throw new RuntimeException("Sin stock suficiente para el producto: " + product.getName());
             }
 
+            // Descontamos el stock
             product.setStock(product.getStock() - cartItem.getQuantity());
             productRepository.save(product);
 
+            // Calculamos el precio congelado en este instante
+            int descuento = (product.getPrice() * product.getDiscount_percentage()) / 100;
+            int precioCongelado = product.getPrice() - descuento;
+
+            // Guardamos el historial del item
             OrderItem orderItem = new OrderItem();
             orderItem.setOrder(order);
             orderItem.setProduct(product);
             orderItem.setQuantity(cartItem.getQuantity());
-            orderItem.setUnit_price(cartItem.getUnit_price());
+            orderItem.setUnit_price(precioCongelado);
             orderItemRepository.save(orderItem);
+            
+            totalDeLaOrden += (precioCongelado * cartItem.getQuantity());
         }
 
+        // Guardamos el total final congelado en la Orden
+        order.setTotal(totalDeLaOrden);
+        orderRepository.save(order);
+
+        // Limpiamos el carrito
         cartItemRepository.deleteAll(cart.getProductosCarrito());
-        cart.setTotal(0);
-        cartRepository.save(cart);
 
         return order;
     }

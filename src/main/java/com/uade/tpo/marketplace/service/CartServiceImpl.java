@@ -23,7 +23,7 @@ public class CartServiceImpl implements CartService {
     public void clearCart(Long userId) {
         Cart cart = getCartByUserId(userId);
         cartItemRepository.deleteAll(cart.getProductosCarrito());
-        cart.setTotal(0);
+        //cart.setTotal(0);
         cartRepository.save(cart);
     }
 }
