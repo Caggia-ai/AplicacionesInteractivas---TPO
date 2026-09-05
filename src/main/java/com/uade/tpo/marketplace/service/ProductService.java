@@ -11,8 +11,7 @@ import com.uade.tpo.marketplace.entity.dto.ProductPatchRequest;
 import com.uade.tpo.marketplace.exceptions.ProductDuplicateException;
 
 public interface ProductService {
-    public Page<Product> getProducts(PageRequest pageRequest);
-
+    public Page<Product> getProducts(Long categoryId, Integer minPrice, Integer maxPrice, String keyword, PageRequest pageable);
     public Optional<Product> getProductById(Long productId);
 
     public Product createProduct(String nombre, String descripcion, int precio, int stock, int porcentaje_descuento, Long id_category, Long id_user) throws ProductDuplicateException;

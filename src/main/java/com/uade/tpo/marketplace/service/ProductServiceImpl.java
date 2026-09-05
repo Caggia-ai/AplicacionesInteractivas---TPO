@@ -29,8 +29,9 @@ public class ProductServiceImpl implements ProductService {
     @Autowired
     private CategoryRepository categoryRepository;
 
-    public Page<Product> getProducts(PageRequest pageable) {
-        return productRepository.findByStateTrue(pageable);
+    @Override
+    public Page<Product> getProducts(Long categoryId, Integer minPrice, Integer maxPrice, String keyword, PageRequest pageable) {
+        return productRepository.findWithFilters(categoryId, minPrice, maxPrice, keyword, pageable);
     }
 
     public Optional<Product> getProductById(Long productId) {

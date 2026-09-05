@@ -29,7 +29,6 @@ public class SecurityConfig {
                                 .csrf(AbstractHttpConfigurer::disable)
                                 .authorizeHttpRequests(req -> req.requestMatchers("/api/v1/auth/**").permitAll()
                                                 .requestMatchers("/error/**").permitAll()
-                                                // Antes solo dejaba pasar USER: un ADMIN recibía 403 al ver categorías.
                                                 .requestMatchers("/categories/**")
                                                 .hasAnyAuthority(Role.USER.name(), Role.ADMIN.name())
                                                 .anyRequest()

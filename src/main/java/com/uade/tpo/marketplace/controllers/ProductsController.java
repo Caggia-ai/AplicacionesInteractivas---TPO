@@ -34,6 +34,10 @@ public class ProductsController {
 
     @GetMapping
     public ResponseEntity<Page<ProductResponse>> getProducts(
+            @RequestParam(required = false) Long categoryId,
+            @RequestParam(required = false) Integer minPrice,
+            @RequestParam(required = false) Integer maxPrice,
+            @RequestParam(required = false) String keyword,
             @RequestParam(required = false) Integer page,
             @RequestParam(required = false) Integer size) {
         
@@ -41,8 +45,8 @@ public class ProductsController {
             ? PageRequest.of(0, Integer.MAX_VALUE) 
             : PageRequest.of(page, size);
             
-        // Obtenemos la página de entidades y la mapeamos a página de DTOs
-        Page<ProductResponse> productPage = productService.getProducts(pageRequest)
+        // Pasamos todos los filtros al servicio
+        Page<ProductResponse> productPage = productService.getProducts(categoryId, minPrice, maxPrice, keyword, pageRequest)
                                                           .map(ProductResponse::fromEntity);
         return ResponseEntity.ok(productPage);
     }
