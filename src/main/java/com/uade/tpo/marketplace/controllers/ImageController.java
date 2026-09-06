@@ -1,6 +1,7 @@
 package com.uade.tpo.marketplace.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType; // IMPORTANTE
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -10,6 +11,7 @@ import com.uade.tpo.marketplace.entity.dto.ImageResponse;
 import com.uade.tpo.marketplace.service.ImageService;
 
 import java.io.IOException;
+import java.sql.Blob;
 import java.sql.SQLException;
 import java.util.Base64;
 
@@ -26,6 +28,7 @@ public class ImageController {
         return ResponseEntity.ok("created");
     }
 
+    // método para obtener la imagen codificada en Base64 (viejo)
     @GetMapping
     public ResponseEntity<ImageResponse> displayImage(@RequestParam("id") Long id) throws IOException, SQLException {
         Image image = imageService.viewById(id);
@@ -36,6 +39,21 @@ public class ImageController {
         response.setId(id);
         response.setFile(encodedString);
         return ResponseEntity.ok().body(response);
+    }
+
+    // Devuelve el archivo crudo para poder usarlo en <img src="URL">
+    @GetMapping("/view/{id}")
+    public ResponseEntity<byte[]> viewImageNatively(@PathVariable Long id) throws SQLException {
+        Image image = imageService.viewById(id);
+        Blob blob = image.getImage();
+        
+        // Convertimos el Blob de la BD a un array de bytes
+        byte[] imageBytes = blob.getBytes(1, (int) blob.length());
+        
+        
+        return ResponseEntity.ok()
+                .contentType(MediaType.IMAGE_JPEG) // Le dice al navegador que es una imagen real
+                .body(imageBytes);
     }
 
     @DeleteMapping

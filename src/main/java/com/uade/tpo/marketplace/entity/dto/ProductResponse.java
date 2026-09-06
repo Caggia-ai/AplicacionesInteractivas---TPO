@@ -1,19 +1,23 @@
 package com.uade.tpo.marketplace.entity.dto;
 
 import com.uade.tpo.marketplace.entity.Product;
+import com.uade.tpo.marketplace.entity.Image; 
 import lombok.Data;
+import java.util.List;
+import java.util.ArrayList;
 
 @Data
 public class ProductResponse {
     private Long id;
     private String name;
     private String description;
-    private int price; // Precio original
-    private int finalPrice; // Precio con el descuento ya aplicado
+    private int price;
+    private int finalPrice; 
     private int stock;
     private int discountPercentage;
     private String categoryName;
     private String sellerUsername;
+    private List<Long> imageIds;
 
     public static ProductResponse fromEntity(Product product) {
         ProductResponse dto = new ProductResponse();
@@ -24,7 +28,6 @@ public class ProductResponse {
         dto.setStock(product.getStock());
         dto.setDiscountPercentage(product.getDiscount_percentage());
         
-        // --- Cálculo para el frontend ---
         int descuentoApli = (product.getPrice() * product.getDiscount_percentage()) / 100;
         dto.setFinalPrice(product.getPrice() - descuentoApli);
         
@@ -34,6 +37,16 @@ public class ProductResponse {
         if (product.getUser() != null) {
             dto.setSellerUsername(product.getUser().getUsername());
         }
+        
+        // --- MAPEAMOS LAS IMÁGENES ---
+        if (product.getImages() != null && !product.getImages().isEmpty()) {
+            dto.setImageIds(product.getImages().stream()
+                                   .map(Image::getId_image)
+                                   .toList());
+        } else {
+            dto.setImageIds(new ArrayList<>());
+        }
+        
         return dto;
     }
 }
