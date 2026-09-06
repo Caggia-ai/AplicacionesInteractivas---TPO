@@ -1,6 +1,8 @@
 package com.uade.tpo.marketplace.entity.dto;
 
 import com.uade.tpo.marketplace.entity.Cart;
+import com.uade.tpo.marketplace.entity.CartItem;
+
 import lombok.Data;
 import java.util.List;
 import java.util.ArrayList;
@@ -18,22 +20,23 @@ public class CartResponse {
         dto.setState(cart.isState());
         
         int totalCalculado = 0;
+        List<CartItemResponse> itemsDto = new ArrayList<>();
         
         if (cart.getProductosCarrito() != null) {
-            List<CartItemResponse> itemsDto = cart.getProductosCarrito().stream()
-                             .map(CartItemResponse::fromEntity)
-                             .toList();
-            dto.setItems(itemsDto);
-            
-            // Sumamos los subtotales de todos los items mapeados
-            for(CartItemResponse i : itemsDto) {
-                totalCalculado += i.getSubtotal();
+            // Recorremos las ENTIDADES originales (CartItem), que tienen getProduct()
+            for (CartItem item : cart.getProductosCarrito()) {
+                
+                // Filtramos: solo procesamos si el producto sigue activo
+                if (item.getProduct().isState()) {
+                    CartItemResponse dtoItem = CartItemResponse.fromEntity(item);
+                    itemsDto.add(dtoItem);
+                    totalCalculado += dtoItem.getSubtotal();
+                }
             }
-        } else {
-            dto.setItems(new ArrayList<>()); 
         }
         
-        dto.setTotal(totalCalculado); // Asignamos el total dinámico al JSON
+        dto.setItems(itemsDto);
+        dto.setTotal(totalCalculado); 
         return dto;
     }
 }

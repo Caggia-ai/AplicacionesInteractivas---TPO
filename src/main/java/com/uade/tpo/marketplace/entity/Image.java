@@ -6,11 +6,13 @@ import jakarta.persistence.Lob;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
-import lombok.Data;
 import jakarta.persistence.JoinColumn;
 import java.sql.Blob;
+import lombok.Getter;
+import lombok.Setter;
 
-@Data
+@Getter
+@Setter
 @Entity
 public class Image {
     @Id

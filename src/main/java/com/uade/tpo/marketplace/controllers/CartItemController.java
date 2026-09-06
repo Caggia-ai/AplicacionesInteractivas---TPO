@@ -28,7 +28,7 @@ public class CartItemController {
         ));
     }
 
-    @DeleteMapping("/product/{productId}") // Ruta limpia: DELETE /cartItems/product/{productId}
+    @DeleteMapping("/product/one/{productId}") // Ruta limpia: DELETE /cartItems/product/one/{productId}
     public ResponseEntity<Void> removeOneItem(
             @PathVariable Long productId,
             @AuthenticationPrincipal User currentUser) {
