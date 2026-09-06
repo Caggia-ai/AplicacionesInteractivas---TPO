@@ -4,11 +4,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType; // IMPORTANTE
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 
 import com.uade.tpo.marketplace.entity.Image;
 import com.uade.tpo.marketplace.entity.dto.AddFileRequest;
 import com.uade.tpo.marketplace.entity.dto.ImageResponse;
 import com.uade.tpo.marketplace.service.ImageService;
+import com.uade.tpo.marketplace.entity.User;
 
 import java.io.IOException;
 import java.sql.Blob;
@@ -23,8 +25,11 @@ public class ImageController {
     private ImageService imageService;
 
     @PostMapping
-    public ResponseEntity<String> addImage(AddFileRequest request) throws IOException, SQLException {
-        imageService.addImageToProduct(request.getProductId(), request.getFile());
+    public ResponseEntity<String> addImage(
+            AddFileRequest request, 
+            @AuthenticationPrincipal User currentUser) throws IOException, SQLException {
+            
+        imageService.addImageToProduct(request.getProductId(), request.getFile(), currentUser);
         return ResponseEntity.ok("created");
     }
 
@@ -57,8 +62,11 @@ public class ImageController {
     }
 
     @DeleteMapping
-    public ResponseEntity<String> deleteImage(@RequestParam("id") Long id) {
-        imageService.deleteImage(id);
+    public ResponseEntity<String> deleteImage(
+            @RequestParam("id") Long id,
+            @AuthenticationPrincipal User currentUser) {
+            
+        imageService.deleteImage(id, currentUser);
         return ResponseEntity.ok("Imagen eliminada correctamente");
     }
 }
