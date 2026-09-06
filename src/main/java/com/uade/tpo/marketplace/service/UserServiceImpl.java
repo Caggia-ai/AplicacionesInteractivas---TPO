@@ -8,6 +8,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.security.access.AccessDeniedException;
 
 import com.uade.tpo.marketplace.entity.Cart;
 import com.uade.tpo.marketplace.entity.Role;
@@ -62,9 +63,15 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User patchUser(Long userId, UserPatchRequest request) throws UserDuplicateException {
+    public User patchUser(Long userId, UserPatchRequest request, User currentUser) throws UserDuplicateException {
+        
+        // Validación de propiedad y rol
+        if (!userId.equals(currentUser.getId_user()) && !currentUser.getRole().name().equals("ADMIN")) {
+            throw new AccessDeniedException("No tienes permisos para modificar este perfil");
+        }
 
         User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+
         if (request.getUsername() != null) {
             Optional<User> existingUser = userRepository.findByUsername(request.getUsername());
             if (existingUser.isPresent() && !existingUser.get().getId_user().equals(userId)) {
@@ -72,21 +79,13 @@ public class UserServiceImpl implements UserService {
             }
             user.setUsername(request.getUsername());
         }
-        if (request.getName() != null) {
-            user.setName(request.getName());
-        }
-        if (request.getSurname() != null) {
-            user.setSurname(request.getSurname());
-        }
-        if (request.getEmail() != null) {
-            user.setEmail(request.getEmail());
-        }
-        if (request.getPassword() != null) {
-            user.setPassword(passwordEncoder.encode(request.getPassword()));
-        }
-        if (request.getRole() != null) {
-            user.setRole(Role.valueOf(request.getRole().toUpperCase()));
-        }
+        
+        if (request.getName() != null) user.setName(request.getName());
+        if (request.getSurname() != null) user.setSurname(request.getSurname());
+        if (request.getEmail() != null) user.setEmail(request.getEmail());
+        if (request.getPassword() != null) user.setPassword(passwordEncoder.encode(request.getPassword()));
+        if (request.getRole() != null) user.setRole(Role.valueOf(request.getRole().toUpperCase()));
+        
         return userRepository.save(user);
-}
+    }
 }

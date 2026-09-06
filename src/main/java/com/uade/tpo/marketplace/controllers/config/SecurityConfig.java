@@ -30,6 +30,7 @@ public class SecurityConfig {
                                 .csrf(AbstractHttpConfigurer::disable)
                                 .authorizeHttpRequests(req -> req.requestMatchers("/api/v1/auth/**").permitAll()
                                                 .requestMatchers("/error/**").permitAll()
+                                                .requestMatchers(HttpMethod.GET, "/products/**").permitAll() // Para ver productos sin login
                                                 .requestMatchers("/images/view/**").permitAll() // Para ver imágenes sin login
                                                 .requestMatchers(HttpMethod.POST, "/categories/**").hasAuthority(Role.ADMIN.name())// Solo admins pueden crear categorías
                                                 // Vendedores y admins pueden gestionar productos

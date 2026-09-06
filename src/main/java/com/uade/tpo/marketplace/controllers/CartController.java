@@ -2,9 +2,11 @@ package com.uade.tpo.marketplace.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import com.uade.tpo.marketplace.entity.Cart;
+import com.uade.tpo.marketplace.entity.User;
 import com.uade.tpo.marketplace.entity.dto.CartResponse;
 import com.uade.tpo.marketplace.service.CartService;
 
@@ -13,15 +15,16 @@ import com.uade.tpo.marketplace.service.CartService;
 public class CartController {
     @Autowired private CartService cartService;
 
-    @GetMapping("/user/{userId}")
-    public ResponseEntity<CartResponse> getCart(@PathVariable Long userId) {
-        Cart cart = cartService.getCartByUserId(userId);
+    @GetMapping // Ruta limpia: GET /carts
+    public ResponseEntity<CartResponse> getCart(@AuthenticationPrincipal User currentUser) {
+        // Le pasamos su propio ID como objetivo, el servicio validará internamente
+        Cart cart = cartService.getCartByUserId(currentUser.getId_user(), currentUser);
         return ResponseEntity.ok(CartResponse.fromEntity(cart));
     }
 
-    @DeleteMapping("/user/{userId}/clear")
-    public ResponseEntity<Void> clearCart(@PathVariable Long userId) {
-        cartService.clearCart(userId);
+    @DeleteMapping("/clear") // Ruta limpia: DELETE /carts/clear
+    public ResponseEntity<Void> clearCart(@AuthenticationPrincipal User currentUser) {
+        cartService.clearCart(currentUser.getId_user(), currentUser);
         return ResponseEntity.noContent().build();
     }
 }

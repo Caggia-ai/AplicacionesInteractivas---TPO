@@ -5,6 +5,9 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.security.access.AccessDeniedException;
+
+import com.uade.tpo.marketplace.entity.User;
 import com.uade.tpo.marketplace.entity.Cart;
 import com.uade.tpo.marketplace.entity.CartItem;
 import com.uade.tpo.marketplace.entity.Product;
@@ -19,58 +22,66 @@ public class CartItemServiceImpl implements CartItemService {
     @Autowired private ProductRepository productRepository;
 
     @Transactional
-public Cart addItemToCart(Long userId, Long productId, int quantityToAdd) {
-    if (quantityToAdd <= 0) {
-        throw new RuntimeException("La cantidad a agregar debe ser mayor a cero.");
-    }
+    public Cart addItemToCart(Long targetUserId, Long productId, int quantityToAdd, User currentUser) {
+        if (!targetUserId.equals(currentUser.getId_user()) && !currentUser.getRole().name().equals("ADMIN")) {
+            throw new AccessDeniedException("No tienes permisos para modificar este carrito");
+        }
+        
+        if (quantityToAdd <= 0) {
+            throw new RuntimeException("La cantidad a agregar debe ser mayor a cero.");
+        }
 
-    Product product = productRepository.findById(productId)
-        .orElseThrow(() -> new RuntimeException("Producto no encontrado"));
-    if (!product.isState()) {
-        throw new RuntimeException("El producto ya no está disponible.");
-    }
-    Cart cart = cartRepository.findByUserId(userId)
-        .orElseThrow(() -> new RuntimeException("El usuario no tiene carrito"));
+        Product product = productRepository.findById(productId)
+            .orElseThrow(() -> new RuntimeException("Producto no encontrado"));
+        if (!product.isState()) {
+            throw new RuntimeException("El producto ya no está disponible.");
+        }
+        Cart cart = cartRepository.findByUserId(targetUserId)
+            .orElseThrow(() -> new RuntimeException("El usuario no tiene carrito"));
 
-    CartItem item = cartItemRepository.findByCartIdAndProductId(cart.getId_cart(), productId)
-        .orElseGet(() -> {
-            CartItem newItem = new CartItem();
-            newItem.setCart(cart);
-            newItem.setProduct(product);
-            newItem.setQuantity(0);
-            return newItem; // Ya no seteamos unit_price aquí
-        });
+        CartItem item = cartItemRepository.findByCartIdAndProductId(cart.getId_cart(), productId)
+            .orElseGet(() -> {
+                CartItem newItem = new CartItem();
+                newItem.setCart(cart);
+                newItem.setProduct(product);
+                newItem.setQuantity(0);
+                return newItem; // Ya no seteamos unit_price aquí
+            });
 
-    int newQuantity = item.getQuantity() + quantityToAdd;
-    
-    if (newQuantity > product.getStock()) {
-        throw new RuntimeException("No hay suficiente stock de " + product.getName()
-            + " (disponible: " + product.getStock() + ").");
-    }
+        int newQuantity = item.getQuantity() + quantityToAdd;
+        
+        if (newQuantity > product.getStock()) {
+            throw new RuntimeException("No hay suficiente stock de " + product.getName()
+                + " (disponible: " + product.getStock() + ").");
+        }
 
-    item.setQuantity(newQuantity);
-    cartItemRepository.save(item);
+        item.setQuantity(newQuantity);
+        cartItemRepository.save(item);
 
-    // Ya no actualizamos el total del Cart, solo retornamos el carrito
-    return cart; 
+        // Ya no actualizamos el total del Cart, solo retornamos el carrito
+        return cart; 
 }
 
-@Transactional
-public Optional<CartItem> removeItemFromCart(Long userId, Long productId) {
-    Cart cart = cartRepository.findByUserId(userId)
-        .orElseThrow(() -> new RuntimeException("Error crítico: el usuario no tiene carrito asignado"));
+    @Transactional
+    public Optional<CartItem> removeItemFromCart(Long targetUserId, Long productId, User currentUser) {
+        if (!targetUserId.equals(currentUser.getId_user()) && !currentUser.getRole().name().equals("ADMIN")) {
+            throw new AccessDeniedException("No tienes permisos para modificar este carrito");
+        }
         
-    CartItem item = cartItemRepository.findByCartIdAndProductId(cart.getId_cart(), productId)
-        .orElseThrow(() -> new RuntimeException("Error crítico: el producto no está en el carrito"));
+        Cart cart = cartRepository.findByUserId(targetUserId)
+            .orElseThrow(() -> new RuntimeException("Error crítico: el usuario no tiene carrito asignado"));
         
-    item.setQuantity(item.getQuantity() - 1); 
+        CartItem item = cartItemRepository.findByCartIdAndProductId(cart.getId_cart(), productId)
+            .orElseThrow(() -> new RuntimeException("Error crítico: el producto no está en el carrito"));
+            
+        item.setQuantity(item.getQuantity() - 1); 
 
-    if (item.getQuantity() <= 0) {
-        cartItemRepository.delete(item); 
-        return Optional.empty(); 
-    } 
-    
-    cartItemRepository.save(item);
-    return Optional.of(item);
-}
+        if (item.getQuantity() <= 0) {
+            cartItemRepository.delete(item); 
+            return Optional.empty(); 
+        } 
+        
+        cartItemRepository.save(item);
+        return Optional.of(item);
+    }
 }

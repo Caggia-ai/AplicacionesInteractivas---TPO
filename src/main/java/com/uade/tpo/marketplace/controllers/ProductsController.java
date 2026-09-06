@@ -4,6 +4,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.uade.tpo.marketplace.entity.User;
 import com.uade.tpo.marketplace.entity.Product;
 import com.uade.tpo.marketplace.entity.dto.ProductPatchRequest;
 import com.uade.tpo.marketplace.entity.dto.ProductRequest;
@@ -14,6 +15,7 @@ import com.uade.tpo.marketplace.service.ProductService;
 import java.net.URI;
 import java.util.Optional;
 
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -61,18 +63,31 @@ public class ProductsController {
     }
 
     @PostMapping
-    public ResponseEntity<ProductResponse> createProduct(@RequestBody ProductRequest productRequest)
-            throws ProductDuplicateException {
-        Product result = productService.createProduct(productRequest.getName(),productRequest.getDescription(), productRequest.getPrice(), productRequest.getStock(), productRequest.getDiscount_percentage(), productRequest.getId_category(), productRequest.getId_user());
-        // Antes se devolvía la entidad Product completa, que trae el User (vendedor)
-        // anidado -incluida su contraseña-. Usamos el DTO, igual que en el GET.
+    public ResponseEntity<ProductResponse> createProduct(
+            @RequestBody ProductRequest productRequest,
+            @AuthenticationPrincipal User user) throws ProductDuplicateException {
+        
+        // Pasamos user.getId_user() directamente desde el token
+        Product result = productService.createProduct(
+            productRequest.getName(),
+            productRequest.getDescription(), 
+            productRequest.getPrice(), 
+            productRequest.getStock(), 
+            productRequest.getDiscount_percentage(), 
+            productRequest.getId_category(), 
+            user.getId_user() 
+        );
         return ResponseEntity.created(URI.create("/products/" + result.getId_product()))
                               .body(ProductResponse.fromEntity(result));
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<ProductResponse> patchProduct(@PathVariable Long id, @RequestBody ProductPatchRequest request) {
-        return ResponseEntity.ok(ProductResponse.fromEntity(productService.patchProduct(id, request)));
+    public ResponseEntity<ProductResponse> patchProduct(
+            @PathVariable Long id, 
+            @RequestBody ProductPatchRequest request,
+            @AuthenticationPrincipal User user) { // Inyectamos el creador/editor
+        
+        return ResponseEntity.ok(ProductResponse.fromEntity(productService.patchProduct(id, request, user)));
     }
 
     @DeleteMapping("/{id}")

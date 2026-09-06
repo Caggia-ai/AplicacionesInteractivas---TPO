@@ -1,16 +1,12 @@
 package com.uade.tpo.marketplace.controllers;
 
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.*;
 
 import com.uade.tpo.marketplace.entity.Cart;
+import com.uade.tpo.marketplace.entity.User;
 import com.uade.tpo.marketplace.entity.dto.CartItemRequest;
 import com.uade.tpo.marketplace.service.CartItemService;
 
@@ -19,14 +15,25 @@ import com.uade.tpo.marketplace.service.CartItemService;
 public class CartItemController {
     @Autowired private CartItemService cartItemService;
     
-    @PostMapping("/user/{userId}")
-    public ResponseEntity<Cart> addItem(@PathVariable Long userId, @RequestBody CartItemRequest request) {
-        return ResponseEntity.ok(cartItemService.addItemToCart(userId, request.getProductId(), request.getQuantity()));
+    @PostMapping // Ruta limpia: POST /cartItems
+    public ResponseEntity<Cart> addItem(
+            @RequestBody CartItemRequest request,
+            @AuthenticationPrincipal User currentUser) {
+            
+        return ResponseEntity.ok(cartItemService.addItemToCart(
+            currentUser.getId_user(), 
+            request.getProductId(), 
+            request.getQuantity(), 
+            currentUser
+        ));
     }
 
-    @DeleteMapping("/user/{userId}/product/{productId}")
-    public ResponseEntity<Void> removeOneItem(@PathVariable Long userId, @PathVariable Long productId) {
-        cartItemService.removeItemFromCart(userId, productId);
+    @DeleteMapping("/product/{productId}") // Ruta limpia: DELETE /cartItems/product/{productId}
+    public ResponseEntity<Void> removeOneItem(
+            @PathVariable Long productId,
+            @AuthenticationPrincipal User currentUser) {
+            
+        cartItemService.removeItemFromCart(currentUser.getId_user(), productId, currentUser);
         return ResponseEntity.noContent().build();
     }
 }

@@ -1,8 +1,9 @@
 package com.uade.tpo.marketplace.service;
 
 import com.uade.tpo.marketplace.entity.Cart;
+import com.uade.tpo.marketplace.entity.User;
 
 public interface CartService {
-    Cart getCartByUserId(Long userId);
-    void clearCart(Long userId); 
+    public Cart getCartByUserId(Long targetUserId, User currentUser);
+    public void clearCart(Long targetUserId, User currentUser);
 }

@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 
 import com.uade.tpo.marketplace.entity.User;
 import com.uade.tpo.marketplace.entity.dto.UserRequest;
@@ -62,15 +63,20 @@ public class UserController {
             request.getPassword(),
             request.getRole()
         );
-        // Antes se devolvía la entidad User completa, que incluía la contraseña
-        // (hasheada, pero igual no debería viajar en la respuesta). Usamos el DTO.
         return ResponseEntity.created(URI.create("/users/" + result.getId_user()))
                               .body(UserResponse.fromEntity(result));
     }
 
-    @PatchMapping("/{userId}")
-    public ResponseEntity<UserResponse> patchUser(@PathVariable Long userId, @RequestBody UserPatchRequest request) throws UserDuplicateException{
-        User result = userService.patchUser(userId, request);
+    @PatchMapping("/{userId}") // Mantenemos el ID para permitir el trabajo del ADMIN
+    public ResponseEntity<UserResponse> patchUser(
+            @PathVariable Long userId, 
+            @RequestBody UserPatchRequest request,
+            @AuthenticationPrincipal User currentUser) throws UserDuplicateException {
+        
+        // El controlador ignora la lógica de seguridad y delega ciegamente.
+        // Si el currentUser intenta editar un userId distinto y no es ADMIN,
+        // el servicio lanzará el AccessDeniedException.
+        User result = userService.patchUser(userId, request, currentUser);
         return ResponseEntity.ok(UserResponse.fromEntity(result));
     }
 }

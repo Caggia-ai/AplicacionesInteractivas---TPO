@@ -55,8 +55,15 @@ public class ProductServiceImpl implements ProductService {
         throw new ProductDuplicateException();
     }
 
-    public Product patchProduct(Long id, ProductPatchRequest request) {
-        Product product = productRepository.findById(id).orElseThrow(() -> new RuntimeException("Producto no encontrado"));
+    public Product patchProduct(Long id, ProductPatchRequest request, User currentUser) {
+        Product product = productRepository.findById(id)
+            .orElseThrow(() -> new RuntimeException("Producto no encontrado"));
+
+        // Verificamos que el usuario logueado sea el dueño del producto (o un ADMIN)
+        if (!product.getUser().getId_user().equals(currentUser.getId_user()) 
+            && !currentUser.getRole().name().equals("ADMIN")) {
+            throw new RuntimeException("No tienes permiso para modificar este producto");
+        }
 
         if (request.getName() != null) {
             product.setName(request.getName());
