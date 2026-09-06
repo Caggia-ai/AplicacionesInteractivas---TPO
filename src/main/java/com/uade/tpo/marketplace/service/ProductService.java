@@ -19,5 +19,5 @@ public interface ProductService {
 
     public Product patchProduct(Long id, ProductPatchRequest request, User currentUser);
 
-    public void deleteProduct(Long productId);
+    public void deleteProduct(Long productId, User currentUser);
 }

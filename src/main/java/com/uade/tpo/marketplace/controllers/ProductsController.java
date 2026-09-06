@@ -91,8 +91,12 @@ public class ProductsController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteProduct(@PathVariable Long id) {
-        productService.deleteProduct(id);
+    public ResponseEntity<Void> deleteProduct(
+            @PathVariable Long id,
+            @AuthenticationPrincipal User currentUser) {
+            
+        // El controlador delega ciegamente. Si no es el dueño, el servicio lanza 403 Forbidden.
+        productService.deleteProduct(id, currentUser);
         return ResponseEntity.noContent().build();
     }
 }

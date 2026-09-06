@@ -16,6 +16,8 @@ import com.uade.tpo.marketplace.repository.UserRepository;
 
 import com.uade.tpo.marketplace.exceptions.ProductDuplicateException;
 import com.uade.tpo.marketplace.repository.ProductRepository;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class ProductServiceImpl implements ProductService {
@@ -84,12 +86,19 @@ public class ProductServiceImpl implements ProductService {
         return productRepository.save(product);
     }
 
-    public void deleteProduct(Long id) {
-    Product product = productRepository.findById(id)
-        .orElseThrow(() -> new RuntimeException("Producto no encontrado"));
-        
-    product.setState(false); 
-    
-    productRepository.save(product);
+    @Transactional
+    public void deleteProduct(Long productId, User currentUser) {
+        Product product = productRepository.findById(productId)
+            .orElseThrow(() -> new RuntimeException("Producto no encontrado"));
+
+        // Validación anti-IDOR: ¿Es el dueño del producto o un ADMIN?
+        if (!product.getUser().getId_user().equals(currentUser.getId_user()) 
+            && !currentUser.getRole().name().equals("ADMIN")) {
+            throw new AccessDeniedException("No tienes permiso para eliminar este producto");
+        }
+
+        // Aplicamos la baja lógica (oculta el producto sin romper historiales de compras)
+        product.setState(false);
+        productRepository.save(product);
     }
 }
