@@ -64,7 +64,7 @@ public class ProductServiceImpl implements ProductService {
         // Verificamos que el usuario logueado sea el dueño del producto (o un ADMIN)
         if (!product.getUser().getId_user().equals(currentUser.getId_user()) 
             && !currentUser.getRole().name().equals("ADMIN")) {
-            throw new RuntimeException("No tienes permiso para modificar este producto");
+            throw new AccessDeniedException("No tienes permiso para modificar este producto");
         }
 
         if (request.getName() != null) {
