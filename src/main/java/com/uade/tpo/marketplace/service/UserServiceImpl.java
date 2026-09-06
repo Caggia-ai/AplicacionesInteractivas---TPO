@@ -10,6 +10,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.uade.tpo.marketplace.entity.Cart;
+import com.uade.tpo.marketplace.entity.Role;
 import com.uade.tpo.marketplace.entity.User;
 import com.uade.tpo.marketplace.entity.dto.UserPatchRequest;
 import com.uade.tpo.marketplace.exceptions.UserDuplicateException;
@@ -42,14 +43,16 @@ public class UserServiceImpl implements UserService {
     public User createUser(String username, String name, String surname, String email, String password, String role) throws UserDuplicateException {
         
        if (userRepository.findByUsername(username).isEmpty()) {
-            // La contraseña se guarda siempre encriptada con BCrypt: antes se guardaba
-            // en texto plano y el login (que usa BCryptPasswordEncoder) nunca hubiera funcionado.
-            User user = new User(username, name, surname, email, passwordEncoder.encode(password), role);
+            
+            // Convertimos el string a Enum de forma segura (pasando a mayúsculas)
+            Role userRole = Role.valueOf(role.toUpperCase());
+            
+            // La contraseña se guarda siempre encriptada con BCrypt
+            User user = new User(username, name, surname, email, passwordEncoder.encode(password), userRole);
             User savedUser = userRepository.save(user);
 
             Cart cart = new Cart();
             cart.setUser(savedUser);
-            //cart.setTotal(0);
             cart.setState(true);
             cartRepository.save(cart);
             
@@ -62,7 +65,6 @@ public class UserServiceImpl implements UserService {
     public User patchUser(Long userId, UserPatchRequest request) throws UserDuplicateException {
 
         User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
-
         if (request.getUsername() != null) {
             Optional<User> existingUser = userRepository.findByUsername(request.getUsername());
             if (existingUser.isPresent() && !existingUser.get().getId_user().equals(userId)) {
@@ -83,9 +85,8 @@ public class UserServiceImpl implements UserService {
             user.setPassword(passwordEncoder.encode(request.getPassword()));
         }
         if (request.getRole() != null) {
-            user.setRole(request.getRole());
+            user.setRole(Role.valueOf(request.getRole().toUpperCase()));
         }
-        
         return userRepository.save(user);
-    }
+}
 }

@@ -26,7 +26,7 @@ public class AuthenticationService {
     public AuthenticationResponse register(RegisterRequest request) throws UserDuplicateException {
         String role = (request.getRole() != null && !request.getRole().isBlank())
                 ? request.getRole()
-                : "USER";
+                : "BUYER";
 
         // userService.createUser ya valida username duplicado, encripta la contraseña
         // con BCrypt y crea el carrito inicial del usuario.

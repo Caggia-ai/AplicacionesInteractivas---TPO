@@ -20,7 +20,7 @@ public class UserResponse {
         dto.setName(user.getName());
         dto.setSurname(user.getSurname());
         dto.setEmail(user.getEmail());
-        dto.setRole(user.getRole());
+        dto.setRole(user.getRole().name());
         return dto;
     }
 }
