@@ -57,9 +57,9 @@ public class ProductsController {
     public ResponseEntity<ProductResponse> getProductById(@PathVariable Long productId) {
         Optional<Product> result = productService.getProductById(productId);
         
-        // Si está presente, lo mapeamos. Si no, devolvemos 404 Not Found (o 204 No Content)
+        // Si está presente, lo mapeamos. Si no, devolvemos 404 Not Found 
         return result.map(product -> ResponseEntity.ok(ProductResponse.fromEntity(product)))
-                     .orElseGet(() -> ResponseEntity.noContent().build());
+                     .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @PostMapping
