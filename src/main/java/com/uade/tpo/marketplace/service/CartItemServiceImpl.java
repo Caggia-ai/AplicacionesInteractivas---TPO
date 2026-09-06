@@ -84,4 +84,45 @@ public class CartItemServiceImpl implements CartItemService {
         cartItemRepository.save(item);
         return Optional.of(item);
     }
+    
+    @Transactional
+    public void removeProductEntirely(Long targetUserId, Long productId, User currentUser) {
+        if (!targetUserId.equals(currentUser.getId_user()) && !currentUser.getRole().name().equals("ADMIN")) {
+            throw new AccessDeniedException("No tienes permisos para modificar este carrito");
+        }
+        Cart cart = cartRepository.findByUserId(targetUserId)
+            .orElseThrow(() -> new RuntimeException("El usuario no tiene carrito asignado"));
+            
+        CartItem item = cartItemRepository.findByCartIdAndProductId(cart.getId_cart(), productId)
+            .orElseThrow(() -> new RuntimeException("El producto no está en el carrito"));
+
+        cartItemRepository.delete(item);
+    }
+
+    @Transactional
+    public CartItem setItemQuantity(Long targetUserId, Long productId, int exactQuantity, User currentUser) {
+        if (!targetUserId.equals(currentUser.getId_user()) && !currentUser.getRole().name().equals("ADMIN")) {
+            throw new AccessDeniedException("No tienes permisos para modificar este carrito");
+        }
+        
+        // Si mandan cantidad 0 o menos, lo eliminamos directamente
+        if (exactQuantity <= 0) {
+            removeProductEntirely(targetUserId, productId, currentUser);
+            return null;
+        }
+
+        Cart cart = cartRepository.findByUserId(targetUserId)
+            .orElseThrow(() -> new RuntimeException("El usuario no tiene carrito"));
+            
+        CartItem item = cartItemRepository.findByCartIdAndProductId(cart.getId_cart(), productId)
+            .orElseThrow(() -> new RuntimeException("El producto no está en el carrito"));
+
+        Product product = item.getProduct();
+        if (exactQuantity > product.getStock()) {
+            throw new RuntimeException("No hay suficiente stock (disponible: " + product.getStock() + ").");
+        }
+
+        item.setQuantity(exactQuantity);
+        return cartItemRepository.save(item);
+    }
 }

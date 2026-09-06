@@ -36,4 +36,25 @@ public class CartItemController {
         cartItemService.removeItemFromCart(currentUser.getId_user(), productId, currentUser);
         return ResponseEntity.noContent().build();
     }
+
+    // Eliminar producto del carrito por completo
+    @DeleteMapping("/product/{productId}")
+    public ResponseEntity<Void> removeProductEntirely(
+            @PathVariable Long productId,
+            @AuthenticationPrincipal User currentUser) {
+            
+        cartItemService.removeProductEntirely(currentUser.getId_user(), productId, currentUser);
+        return ResponseEntity.noContent().build();
+    }
+
+    // Setear cantidad exacta de un producto en el carrito
+    @PutMapping("/product/{productId}")
+    public ResponseEntity<Void> setItemQuantity(
+            @PathVariable Long productId,
+            @RequestParam int quantity,
+            @AuthenticationPrincipal User currentUser) {
+            
+        cartItemService.setItemQuantity(currentUser.getId_user(), productId, quantity, currentUser);
+        return ResponseEntity.ok().build();
+    }
 }
