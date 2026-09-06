@@ -32,8 +32,10 @@ public class SecurityConfig {
                                                 .requestMatchers("/error/**").permitAll()
                                                 .requestMatchers(HttpMethod.GET, "/products/**").permitAll() // Para ver productos sin login
                                                 .requestMatchers("/images/view/**").permitAll() // Para ver imágenes sin login
-                                                .requestMatchers(HttpMethod.POST, "/categories/**").hasAuthority(Role.ADMIN.name())// Solo admins pueden crear categorías
-                                                // Vendedores y admins pueden gestionar productos
+                                                .requestMatchers(HttpMethod.POST, "/categories/**").hasAuthority(Role.ADMIN.name())
+                                                .requestMatchers(HttpMethod.PATCH, "/categories/**").hasAuthority(Role.ADMIN.name())
+                                                .requestMatchers(HttpMethod.DELETE, "/categories/**").hasAuthority(Role.ADMIN.name())   
+                                                                                             // Vendedores y admins pueden gestionar productos
                                                 .requestMatchers(HttpMethod.POST, "/products").hasAnyAuthority(Role.SELLER.name(), Role.ADMIN.name())
                                                 .requestMatchers(HttpMethod.PATCH, "/products/**").hasAnyAuthority(Role.SELLER.name(), Role.ADMIN.name())
                                                 .requestMatchers(HttpMethod.DELETE, "/products/**").hasAnyAuthority(Role.SELLER.name(), Role.ADMIN.name())

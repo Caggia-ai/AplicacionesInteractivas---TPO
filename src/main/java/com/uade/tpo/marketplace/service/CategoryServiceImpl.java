@@ -31,4 +31,30 @@ public class CategoryServiceImpl implements CategoryService {
             return categoryRepository.save(new Category(description));
         throw new CategoryDuplicateException();
     }
+
+    public Category updateCategory(Long categoryId, String newDescription) throws CategoryDuplicateException {
+        Category category = categoryRepository.findById(categoryId)
+            .orElseThrow(() -> new RuntimeException("Categoría no encontrada"));
+        
+        // Verificamos si el nuevo nombre ya lo usa otra categoría
+        Optional<Category> existingCategory = categoryRepository.findByDescription(newDescription);
+        if (existingCategory.isPresent() && !existingCategory.get().getId().equals(categoryId)) {
+            throw new CategoryDuplicateException();
+        }
+
+        category.setDescription(newDescription);
+        return categoryRepository.save(category);
+    }
+
+    public void deleteCategory(Long categoryId) {
+        Category category = categoryRepository.findById(categoryId)
+            .orElseThrow(() -> new RuntimeException("Categoría no encontrada"));
+        
+        // Validación crítica: evitar borrar una categoría que ya está siendo usada por productos
+        if (category.getProducts() != null && !category.getProducts().isEmpty()) {
+            throw new RuntimeException("No se puede eliminar la categoría porque tiene productos asociados.");
+        }
+
+        categoryRepository.delete(category);
+    }
 }

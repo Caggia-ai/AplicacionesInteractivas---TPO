@@ -13,6 +13,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.EnumType;
 
@@ -65,6 +66,10 @@ public class User implements UserDetails {
     @JsonIgnore
     @OneToMany(mappedBy = "user")
     private List<Product> products;
+
+    @JsonIgnore
+    @OneToOne(mappedBy = "user")
+    private Cart cart;
 
     // ---- Métodos que pide UserDetails (Spring Security) ----
 

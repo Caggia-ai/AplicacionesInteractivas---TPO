@@ -10,5 +10,4 @@ public class ProductRequest {
     private int stock;
     private int discount_percentage;
     private Long id_category;
-    private Long id_user;
 }

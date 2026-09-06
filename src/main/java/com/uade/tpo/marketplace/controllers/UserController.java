@@ -53,20 +53,6 @@ public class UserController {
                      .orElseGet(() -> ResponseEntity.noContent().build());
     }
 
-    @PostMapping
-    public ResponseEntity<UserResponse> createUser(@RequestBody UserRequest request) throws UserDuplicateException{
-        User result = userService.createUser(
-            request.getUsername(),
-            request.getName(),
-            request.getSurname(),
-            request.getEmail(),
-            request.getPassword(),
-            request.getRole()
-        );
-        return ResponseEntity.created(URI.create("/users/" + result.getId_user()))
-                              .body(UserResponse.fromEntity(result));
-    }
-
     @PatchMapping("/{userId}") // Mantenemos el ID para permitir el trabajo del ADMIN
     public ResponseEntity<UserResponse> patchUser(
             @PathVariable Long userId, 
