@@ -9,6 +9,6 @@ public class RegisterRequest {
     private String surname;
     private String email;
     private String password;
-    // Opcional: si no se manda, AuthenticationService lo completa con "USER".
+    // Opcional: si no se manda, AuthenticationService lo completa con "BUYER".
     private String role;
 }
