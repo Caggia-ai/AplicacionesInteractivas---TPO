@@ -28,8 +28,6 @@ public class AuthenticationServiceImpl implements AuthenticationService{
                 ? request.getRole()
                 : "BUYER";
 
-        // userService.createUser ya valida username duplicado, encripta la contraseña
-        // con BCrypt y crea el carrito inicial del usuario.
         User user = userService.createUser(
                 request.getUsername(),
                 request.getName(),
@@ -45,12 +43,15 @@ public class AuthenticationServiceImpl implements AuthenticationService{
     }
 
     public AuthenticationResponse authenticate(AuthenticationRequest request) {
+        // Autenticamos usando el dato que venga en el JSON (puede ser email o username)
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         request.getEmail(),
                         request.getPassword()));
 
+        // Buscamos al usuario por email o por username
         User user = repository.findByEmail(request.getEmail())
+                .or(() -> repository.findByUsername(request.getEmail()))
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
 
         String jwtToken = jwtService.generateToken(user);

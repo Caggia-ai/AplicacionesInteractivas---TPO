@@ -22,7 +22,8 @@ public class ApplicationConfig {
 
     @Bean
     public UserDetailsService userDetailsService() {
-        return username -> repository.findByEmail(username)
+        return identifier -> repository.findByEmail(identifier)
+                .or(() -> repository.findByUsername(identifier)) // Agregamos búsqueda por username
                 .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado"));
     }
 
@@ -42,5 +43,4 @@ public class ApplicationConfig {
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
-
 }

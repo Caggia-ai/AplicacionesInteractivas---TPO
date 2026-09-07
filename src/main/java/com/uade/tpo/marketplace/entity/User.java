@@ -78,16 +78,7 @@ public class User implements UserDetails {
         return List.of(new SimpleGrantedAuthority(role.name()));
     }
 
-    // OJO: este es el método que exige la interfaz UserDetails de Spring Security,
-    // que representa el "identificador de login", no el campo de negocio "username".
-    // El login (AuthenticationService / ApplicationConfig.userDetailsService) busca
-    // al usuario por email, así que el principal tiene que ser el email: si acá
-    // devolviéramos this.username, el JWT quedaría con el username como "subject" y
-    // el filtro JWT fallaría al buscar al usuario por findByEmail(...) después del login.
-    @Override
-    public String getUsername() {
-        return email;
-    }
+    
 
     @Override
     public boolean isAccountNonExpired() {
