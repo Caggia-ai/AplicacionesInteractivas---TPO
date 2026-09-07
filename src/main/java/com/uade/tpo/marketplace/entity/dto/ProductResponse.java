@@ -1,12 +1,25 @@
 package com.uade.tpo.marketplace.entity.dto;
 
 import com.uade.tpo.marketplace.entity.Product;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.uade.tpo.marketplace.entity.Image; 
 import lombok.Data;
 import java.util.List;
 import java.util.ArrayList;
 
 @Data
+@JsonPropertyOrder({
+    "name",
+    "categoryName",
+    "price",
+    "discountPercentage",
+    "finalPrice",
+    "stock",
+    "description",
+    "sellerUsername",
+    "id",
+    "imageIds"
+})
 public class ProductResponse {
     private Long id;
     private String name;

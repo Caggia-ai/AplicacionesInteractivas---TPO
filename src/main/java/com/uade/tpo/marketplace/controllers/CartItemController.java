@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import com.uade.tpo.marketplace.entity.Cart;
 import com.uade.tpo.marketplace.entity.User;
 import com.uade.tpo.marketplace.entity.dto.CartItemRequest;
+import com.uade.tpo.marketplace.entity.dto.CartResponse;
 import com.uade.tpo.marketplace.service.CartItemService;
 
 @RestController
@@ -15,18 +16,21 @@ import com.uade.tpo.marketplace.service.CartItemService;
 public class CartItemController {
     @Autowired private CartItemService cartItemService;
     
-    @PostMapping // Ruta limpia: POST /cartItems
-    public ResponseEntity<Cart> addItem(
+    @PostMapping
+    public ResponseEntity<CartResponse> addItem( // 1. Cambiamos Cart por CartResponse
             @RequestBody CartItemRequest request,
             @AuthenticationPrincipal User currentUser) {
             
-        return ResponseEntity.ok(cartItemService.addItemToCart(
+        Cart updatedCart = cartItemService.addItemToCart(
             currentUser.getId_user(), 
             request.getProductId(), 
             request.getQuantity(), 
             currentUser
-        ));
-    }
+        );
+        
+        // 2. Mapeamos la entidad al DTO antes de devolverla
+        return ResponseEntity.ok(CartResponse.fromEntity(updatedCart)); 
+}
 
     @DeleteMapping("/product/one/{productId}") // Ruta limpia: DELETE /cartItems/product/one/{productId}
     public ResponseEntity<Void> removeOneItem(

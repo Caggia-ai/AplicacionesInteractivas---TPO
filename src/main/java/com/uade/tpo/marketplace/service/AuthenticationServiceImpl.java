@@ -24,9 +24,14 @@ public class AuthenticationServiceImpl implements AuthenticationService{
     private final AuthenticationManager authenticationManager;
 
     public AuthenticationResponse register(RegisterRequest request) throws UserDuplicateException {
-        String role = (request.getRole() != null && !request.getRole().isBlank())
-                ? request.getRole()
+        String requestedRole = (request.getRole() != null && !request.getRole().isBlank()) 
+                ? request.getRole().toUpperCase() 
                 : "BUYER";
+                
+        // Bloqueo de seguridad: si intentan registrarse como ADMIN desde afuera, se fuerza el rol básico.
+        if (requestedRole.equals("ADMIN")) {
+                requestedRole = "BUYER"; 
+        }
 
         User user = userService.createUser(
                 request.getUsername(),
@@ -34,7 +39,7 @@ public class AuthenticationServiceImpl implements AuthenticationService{
                 request.getSurname(),
                 request.getEmail(),
                 request.getPassword(),
-                role);
+                requestedRole);
 
         String jwtToken = jwtService.generateToken(user);
         return AuthenticationResponse.builder()

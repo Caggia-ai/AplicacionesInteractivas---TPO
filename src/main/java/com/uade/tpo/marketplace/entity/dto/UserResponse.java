@@ -1,9 +1,18 @@
 package com.uade.tpo.marketplace.entity.dto;
 
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.uade.tpo.marketplace.entity.User;
 import lombok.Data;
 
 @Data
+@JsonPropertyOrder({
+    "id",
+    "username",
+    "name",
+    "surname",
+    "email",
+    "role"
+})
 public class UserResponse {
     private Long id;
     private String username;
