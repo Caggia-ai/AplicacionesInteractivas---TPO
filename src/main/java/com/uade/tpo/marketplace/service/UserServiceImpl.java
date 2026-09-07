@@ -40,6 +40,11 @@ public class UserServiceImpl implements UserService {
         return userRepository.findById(userId);
     }
 
+    @Override
+    public Optional<User> getUserByEmail(String email) {
+        return userRepository.findByEmail(email);
+    }
+
     @Override 
     public User createUser(String username, String name, String surname, String email, String password, String role) throws UserDuplicateException {
         
@@ -102,6 +107,17 @@ public class UserServiceImpl implements UserService {
         }
         
         return userRepository.save(user);
+    }
+
+    @Override
+    public void seedAdminIfNotExists(String email, String password) throws UserDuplicateException {
+        if (email == null || email.isBlank() || password == null || password.isBlank()) {
+            return; // no configuraron las variables, no hacemos nada
+        }
+        if (userRepository.findByEmail(email).isPresent()) {
+            return; // ya existe, no lo recreamos
+        }
+        createUser("admin", "Admin", "Admin", email, password, "ADMIN");
     }
     
     private Role parseRole(String role) {
