@@ -38,7 +38,7 @@ public class SecurityConfig {
                                                                                              // Vendedores y admins pueden gestionar productos
                                                 .requestMatchers(HttpMethod.POST, "/products").hasAnyAuthority(Role.SELLER.name(), Role.ADMIN.name())
                                                 .requestMatchers(HttpMethod.PATCH, "/products/**").hasAnyAuthority(Role.SELLER.name(), Role.ADMIN.name())
-                                                .requestMatchers(HttpMethod.DELETE, "/products/**").hasAnyAuthority(Role.SELLER.name(), Role.ADMIN.name())
+                                                .requestMatchers(HttpMethod.PUT, "/products/**").hasAnyAuthority(Role.SELLER.name(), Role.ADMIN.name())
                                                 
                                                 // Cualquier otra petición requiere estar logueado (incluye carritos y compras)
                                                 .anyRequest().authenticated()
