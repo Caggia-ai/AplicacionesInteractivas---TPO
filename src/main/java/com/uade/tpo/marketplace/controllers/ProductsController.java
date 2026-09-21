@@ -24,7 +24,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
 @RestController
@@ -90,13 +90,13 @@ public class ProductsController {
         return ResponseEntity.ok(ProductResponse.fromEntity(productService.patchProduct(id, request, user)));
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteProduct(
+    @PutMapping("/{id}")
+    public ResponseEntity<Void> disableProduct(
             @PathVariable Long id,
             @AuthenticationPrincipal User currentUser) {
             
         // El controlador delega ciegamente. Si no es el dueño, el servicio lanza 403 Forbidden.
-        productService.deleteProduct(id, currentUser);
+        productService.disableProduct(id, currentUser);
         return ResponseEntity.noContent().build();
     }
 }
