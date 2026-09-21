@@ -87,14 +87,14 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Transactional
-    public void deleteProduct(Long productId, User currentUser) {
+    public void disableProduct(Long productId, User currentUser) {
         Product product = productRepository.findById(productId)
             .orElseThrow(() -> new RuntimeException("Producto no encontrado"));
 
         // Validación anti-IDOR: ¿Es el dueño del producto o un ADMIN?
         if (!product.getUser().getId_user().equals(currentUser.getId_user()) 
             && !currentUser.getRole().name().equals("ADMIN")) {
-            throw new AccessDeniedException("No tienes permiso para eliminar este producto");
+            throw new AccessDeniedException("No tienes permiso para deshabilitar este producto");
         }
 
         // Aplicamos la baja lógica (oculta el producto sin romper historiales de compras)
