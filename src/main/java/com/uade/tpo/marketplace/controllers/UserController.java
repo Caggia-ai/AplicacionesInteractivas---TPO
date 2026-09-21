@@ -19,8 +19,10 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import com.uade.tpo.marketplace.entity.User;
 import com.uade.tpo.marketplace.entity.dto.UserResponse;
 import com.uade.tpo.marketplace.entity.dto.UserPatchRequest;
+import com.uade.tpo.marketplace.entity.dto.UserPatchResponse;
 import com.uade.tpo.marketplace.exceptions.UserDuplicateException;
 import com.uade.tpo.marketplace.service.UserService;
+import com.uade.tpo.marketplace.controllers.config.JwtService;
 
 @RestController
 @RequestMapping("users")
@@ -28,6 +30,9 @@ public class UserController {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private JwtService jwtService;
 
     @GetMapping
     public ResponseEntity<Page<UserResponse>> getUsers(
@@ -52,7 +57,7 @@ public class UserController {
     }
 
     @PatchMapping("/{userId}") // Mantenemos el ID para permitir el trabajo del ADMIN
-    public ResponseEntity<UserResponse> patchUser(
+    public ResponseEntity<UserPatchResponse> patchUser(
             @PathVariable Long userId, 
             @RequestBody UserPatchRequest request,
             @AuthenticationPrincipal User currentUser) throws UserDuplicateException {
@@ -61,7 +66,11 @@ public class UserController {
         // Si el currentUser intenta editar un userId distinto y no es ADMIN,
         // el servicio lanzará el AccessDeniedException.
         User result = userService.patchUser(userId, request, currentUser);
-        return ResponseEntity.ok(UserResponse.fromEntity(result));
+        // Generamos un token nuevo con los datos actualizados ya que, si el patch
+        // cambió el email (el "subject" del JWT), el token viejo del cliente
+        // quedaría inválido/desincronizado si no le damos uno nuevo en este punto.
+        String newToken = jwtService.generateToken(result);
+        return ResponseEntity.ok(new UserPatchResponse(UserResponse.fromEntity(result), newToken));
     }
 }
 
