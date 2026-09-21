@@ -44,7 +44,7 @@ public class CartItemController {
         Optional<CartItem> result = cartItemService.removeItemFromCart(currentUser.getId_user(), productId, currentUser);
  
         // Mensaje distinto según si quedó con unidades restantes o se eliminó del todo,
-        // en vez de devolver 204/un número pelado sin contexto.
+        // en vez de devolver 204/un número sin contexto.
         String message = result
                 .map(item -> "Se descontó una unidad. Quedan " + item.getQuantity() + " en el carrito.")
                 .orElse("Se eliminó el producto del carrito (no quedaban más unidades).");
