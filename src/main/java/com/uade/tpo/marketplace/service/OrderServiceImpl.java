@@ -32,7 +32,26 @@ public class OrderServiceImpl implements OrderService {
             throw new RuntimeException("No se puede comprar con el carrito vacío");
         }
 
-        // Creamos la orden primero para tener su ID
+        // 1. Filtramos solo los ítems cuyos productos siguen activos (state == true)
+        List<CartItem> validItems = cart.getProductosCarrito().stream()
+            .filter(ci -> ci.getProduct() != null && ci.getProduct().isState())
+            .toList();
+
+        // 2. Si todos los productos del carrito fueron eliminados, vaciamos el carrito y frenamos la orden
+        if (validItems.isEmpty()) {
+            cartItemRepository.deleteAll(cart.getProductosCarrito());
+            throw new RuntimeException("Los productos de tu carrito ya no están disponibles.");
+        }
+
+        // 3. Validamos el stock antes de crear la orden
+        for (CartItem cartItem : validItems) {
+            Product product = cartItem.getProduct();
+            if (product.getStock() < cartItem.getQuantity()) {
+                throw new RuntimeException("Sin stock suficiente para el producto: " + product.getName());
+            }
+        }
+
+        // 4. Recién acá creamos la orden porque sabemos que hay al menos 1 producto válido
         Order order = new Order();
         order.setUser(user);
         order.setPayment_method(paymentMethod);
@@ -40,27 +59,17 @@ public class OrderServiceImpl implements OrderService {
         order.setDate(LocalDate.now());
         order = orderRepository.save(order);
 
-        int totalDeLaOrden = 0; // Vamos a ir acumulando el total
+        int totalDeLaOrden = 0;
 
-        for (CartItem cartItem : cart.getProductosCarrito()) {
+        for (CartItem cartItem : validItems) {
             Product product = cartItem.getProduct();
-            if (!product.isState()) {
-                throw new RuntimeException("El producto " + product.getName() + " ya no está disponible para la compra.");
-            }
 
-            if (product.getStock() < cartItem.getQuantity()) {
-                throw new RuntimeException("Sin stock suficiente para el producto: " + product.getName());
-            }
-
-            // Descontamos el stock
             product.setStock(product.getStock() - cartItem.getQuantity());
             productRepository.save(product);
 
-            // Calculamos el precio congelado en este instante
             int descuento = (product.getPrice() * product.getDiscount_percentage()) / 100;
             int precioCongelado = product.getPrice() - descuento;
 
-            // Guardamos el historial del item
             OrderItem orderItem = new OrderItem();
             orderItem.setOrder(order);
             orderItem.setProduct(product);
@@ -71,11 +80,10 @@ public class OrderServiceImpl implements OrderService {
             totalDeLaOrden += (precioCongelado * cartItem.getQuantity());
         }
 
-        // Guardamos el total final congelado en la Orden
         order.setTotal(totalDeLaOrden);
         orderRepository.save(order);
 
-        // Limpiamos el carrito
+        // Limpiamos todos los ítems del carrito (válidos e inactivos)
         cartItemRepository.deleteAll(cart.getProductosCarrito());
 
         return order;

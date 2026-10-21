@@ -8,4 +8,5 @@ public class ProductPatchRequest {
     private Integer price; // Usamos Integer en vez de int para permitir nulls
     private Integer stock;
     private Integer discount_percentage;
+    private Boolean state;
 }

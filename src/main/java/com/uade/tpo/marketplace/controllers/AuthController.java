@@ -16,6 +16,9 @@ import com.uade.tpo.marketplace.service.AuthenticationService;
 // Antes no existía ningún controller para /api/v1/auth/**: SecurityConfig lo dejaba
 // pasar libre (permitAll) pero no había forma real de registrarse ni loguearse,
 // así que ningún otro endpoint (todos exigen JWT) era alcanzable.
+import org.springframework.web.bind.annotation.CrossOrigin;
+
+@CrossOrigin(origins = "http://localhost:5173")
 @RestController
 @RequestMapping("/api/v1/auth")
 public class AuthController {

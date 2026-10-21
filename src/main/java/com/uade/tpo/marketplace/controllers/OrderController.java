@@ -14,6 +14,10 @@ import com.uade.tpo.marketplace.service.OrderService;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.web.bind.annotation.CrossOrigin;
+
+
+@CrossOrigin(origins = "http://localhost:5173")
 @RestController
 @RequestMapping("orders")
 public class OrderController {

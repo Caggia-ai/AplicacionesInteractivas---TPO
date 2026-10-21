@@ -11,6 +11,9 @@ import com.uade.tpo.marketplace.entity.Product;
 import com.uade.tpo.marketplace.entity.dto.ProductPatchRequest;
 import com.uade.tpo.marketplace.exceptions.ProductDuplicateException;
 
+import java.util.List;
+
+
 public interface ProductService {
     public Page<Product> getProducts(Long categoryId, Integer minPrice, Integer maxPrice, String keyword, PageRequest pageable);
     public Optional<Product> getProductById(Long productId);
@@ -20,4 +23,6 @@ public interface ProductService {
     public Product patchProduct(Long id, ProductPatchRequest request, User currentUser);
 
     public void disableProduct(Long productId, User currentUser);
+
+    public List<Product> getSellerProducts(User currentUser);
 }

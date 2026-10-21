@@ -31,6 +31,7 @@ public class ProductResponse {
     private String categoryName;
     private String sellerUsername;
     private List<Long> imageIds;
+    private boolean state;
 
     public static ProductResponse fromEntity(Product product) {
         ProductResponse dto = new ProductResponse();
@@ -40,6 +41,7 @@ public class ProductResponse {
         dto.setPrice(product.getPrice());
         dto.setStock(product.getStock());
         dto.setDiscountPercentage(product.getDiscount_percentage());
+        dto.setState(product.isState());
         
         int descuentoApli = (product.getPrice() * product.getDiscount_percentage()) / 100;
         dto.setFinalPrice(product.getPrice() - descuentoApli);

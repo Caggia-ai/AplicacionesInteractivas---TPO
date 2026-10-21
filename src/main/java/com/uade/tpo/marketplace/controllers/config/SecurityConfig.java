@@ -21,6 +21,8 @@ import static org.springframework.security.config.http.SessionCreationPolicy.STA
 
 import lombok.RequiredArgsConstructor;
 
+import org.springframework.security.config.Customizer;
+
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
@@ -32,8 +34,11 @@ public class SecurityConfig {
         @Bean
         public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
                 http
+                                .cors(Customizer.withDefaults())
                                 .csrf(AbstractHttpConfigurer::disable)
-                                .authorizeHttpRequests(req -> req.requestMatchers("/api/v1/auth/**").permitAll()
+                                .authorizeHttpRequests(req -> req
+                                                .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                                                .requestMatchers("/api/v1/auth/**").permitAll()
                                                 .requestMatchers("/error/**").permitAll()
                                                 .requestMatchers(HttpMethod.GET, "/products/**").permitAll() // Para ver productos sin login
                                                 .requestMatchers("/images/view/**").permitAll() // Para ver imágenes sin login
@@ -56,17 +61,17 @@ public class SecurityConfig {
         }
 
         @Bean
-    public CorsConfigurationSource corsConfigurationSource() {
-        CorsConfiguration configuration = new CorsConfiguration();
-        // Acá ponemos el puerto exacto donde corre tu frontend (Vite)
-        configuration.setAllowedOrigins(Arrays.asList("http://localhost:5173"));
-        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
-        configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type"));
-        configuration.setAllowCredentials(true);
+        public CorsConfigurationSource corsConfigurationSource() {
+                CorsConfiguration configuration = new CorsConfiguration();
+                // Acá ponemos el puerto exacto donde corre tu frontend (Vite)
+                configuration.setAllowedOrigins(Arrays.asList("http://localhost:5173"));
+                configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
+                configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type"));
+                configuration.setAllowCredentials(true);
 
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        // Aplica esta configuración a todos los endpoints del backend
-        source.registerCorsConfiguration("/**", configuration);
-        return source;
-    }
+                UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+                // Aplica esta configuración a todos los endpoints del backend
+                source.registerCorsConfiguration("/**", configuration);
+                return source;
+        }
 }

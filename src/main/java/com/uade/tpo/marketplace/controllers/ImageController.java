@@ -17,6 +17,10 @@ import java.sql.Blob;
 import java.sql.SQLException;
 import java.util.Base64;
 
+import org.springframework.web.bind.annotation.CrossOrigin;
+
+
+@CrossOrigin(origins = "http://localhost:5173")
 @RestController
 @RequestMapping("images")
 public class ImageController {

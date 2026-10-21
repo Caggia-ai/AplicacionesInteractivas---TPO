@@ -19,8 +19,13 @@ import com.uade.tpo.marketplace.repository.ProductRepository;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.transaction.annotation.Transactional;
 
+
 @Service
 public class ProductServiceImpl implements ProductService {
+
+    @Autowired
+    private com.uade.tpo.marketplace.repository.CartItemRepository cartItemRepository;
+
 
     @Autowired
     private ProductRepository productRepository;
@@ -83,6 +88,9 @@ public class ProductServiceImpl implements ProductService {
             product.setDiscount_percentage(request.getDiscount_percentage());
         }
 
+        if (request.getState() != null) {
+            product.setState(request.getState());
+        }
         return productRepository.save(product);
     }
 
@@ -91,14 +99,26 @@ public class ProductServiceImpl implements ProductService {
         Product product = productRepository.findById(productId)
             .orElseThrow(() -> new RuntimeException("Producto no encontrado"));
 
-        // Validación anti-IDOR: ¿Es el dueño del producto o un ADMIN?
         if (!product.getUser().getId_user().equals(currentUser.getId_user()) 
             && !currentUser.getRole().name().equals("ADMIN")) {
             throw new AccessDeniedException("No tienes permiso para deshabilitar este producto");
         }
 
-        // Aplicamos la baja lógica (oculta el producto sin romper historiales de compras)
+        // Eliminamos el producto de cualquier carrito activo para que no queden ítems fantasma
+        if (product.getCartItems() != null && !product.getCartItems().isEmpty()) {
+            cartItemRepository.deleteAll(product.getCartItems());
+        }
+
         product.setState(false);
         productRepository.save(product);
+    }
+
+
+    @Override
+    public java.util.List<Product> getSellerProducts(User currentUser) {
+        if (currentUser.getRole().name().equals("ADMIN")) {
+            return productRepository.findAll();
+        }
+        return productRepository.findByUserId(currentUser.getId_user());
     }
 }

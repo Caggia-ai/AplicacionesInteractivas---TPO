@@ -101,4 +101,17 @@ public class ProductsController {
         productService.disableProduct(id, currentUser);
         return ResponseEntity.noContent().build();
     }
+
+    @GetMapping("/seller")
+    public ResponseEntity<java.util.List<ProductResponse>> getSellerProducts(
+            @AuthenticationPrincipal User currentUser) {
+        if (currentUser == null) {
+            return ResponseEntity.status(401).build();
+        }
+        java.util.List<ProductResponse> list = productService.getSellerProducts(currentUser)
+                .stream()
+                .map(ProductResponse::fromEntity)
+                .toList();
+        return ResponseEntity.ok(list);
+    }
 }

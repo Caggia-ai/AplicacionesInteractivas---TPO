@@ -8,9 +8,13 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.query.Param; // IMPORTANTE AGREGAR ESTO
 
 import com.uade.tpo.marketplace.entity.Product;
+import java.util.List; // <-- Importar arriba
 
 public interface ProductRepository extends JpaRepository<Product, Long> {
 
+
+       @Query("SELECT p FROM Product p WHERE p.user.id_user = ?1")
+       List<Product> findByUserId(Long userId);
     @Query(value = "select p from Product p where p.name = ?1")
     Optional<Product> findByName(String name);
 

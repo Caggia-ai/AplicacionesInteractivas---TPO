@@ -23,7 +23,10 @@ import com.uade.tpo.marketplace.entity.dto.UserPatchResponse;
 import com.uade.tpo.marketplace.exceptions.UserDuplicateException;
 import com.uade.tpo.marketplace.service.UserService;
 import com.uade.tpo.marketplace.controllers.config.JwtService;
+import org.springframework.web.bind.annotation.CrossOrigin;
 
+
+@CrossOrigin(origins = "http://localhost:5173")
 @RestController
 @RequestMapping("users")
 public class UserController {
