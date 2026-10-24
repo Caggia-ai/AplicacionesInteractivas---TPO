@@ -42,6 +42,7 @@ public class SecurityConfig {
                                                 .requestMatchers("/error/**").permitAll()
                                                 .requestMatchers(HttpMethod.GET, "/products/**").permitAll() // Para ver productos sin login
                                                 .requestMatchers("/images/view/**").permitAll() // Para ver imágenes sin login
+                                                .requestMatchers(HttpMethod.GET, "/categories/**").permitAll()
                                                 .requestMatchers(HttpMethod.POST, "/categories/**").hasAuthority(Role.ADMIN.name())
                                                 .requestMatchers(HttpMethod.PATCH, "/categories/**").hasAuthority(Role.ADMIN.name())
                                                 .requestMatchers(HttpMethod.DELETE, "/categories/**").hasAuthority(Role.ADMIN.name())   
@@ -49,7 +50,6 @@ public class SecurityConfig {
                                                 .requestMatchers(HttpMethod.POST, "/products").hasAnyAuthority(Role.SELLER.name(), Role.ADMIN.name())
                                                 .requestMatchers(HttpMethod.PATCH, "/products/**").hasAnyAuthority(Role.SELLER.name(), Role.ADMIN.name())
                                                 .requestMatchers(HttpMethod.PUT, "/products/**").hasAnyAuthority(Role.SELLER.name(), Role.ADMIN.name())
-                                                .requestMatchers(HttpMethod.GET, "/categories/**").permitAll()
                                                 // Cualquier otra petición requiere estar logueado (incluye carritos y compras)
                                                 .anyRequest().authenticated()
                                         )
