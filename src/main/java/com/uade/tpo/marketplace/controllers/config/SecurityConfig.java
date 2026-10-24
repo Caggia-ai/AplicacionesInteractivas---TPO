@@ -49,7 +49,7 @@ public class SecurityConfig {
                                                 .requestMatchers(HttpMethod.POST, "/products").hasAnyAuthority(Role.SELLER.name(), Role.ADMIN.name())
                                                 .requestMatchers(HttpMethod.PATCH, "/products/**").hasAnyAuthority(Role.SELLER.name(), Role.ADMIN.name())
                                                 .requestMatchers(HttpMethod.PUT, "/products/**").hasAnyAuthority(Role.SELLER.name(), Role.ADMIN.name())
-                                                
+                                                .requestMatchers(HttpMethod.GET, "/categories/**").permitAll()
                                                 // Cualquier otra petición requiere estar logueado (incluye carritos y compras)
                                                 .anyRequest().authenticated()
                                         )
