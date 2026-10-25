@@ -7,6 +7,7 @@ public class UserPatchRequest{
   private String name; 
   private String surname;
   private String email;
+  private String currentPassword;
   private String password;
   private String role;
 }

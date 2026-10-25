@@ -96,8 +96,16 @@ public class UserServiceImpl implements UserService {
 
         if (request.getName() != null) user.setName(request.getName());
         if (request.getSurname() != null) user.setSurname(request.getSurname());
-        if (request.getPassword() != null) user.setPassword(passwordEncoder.encode(request.getPassword()));
-        
+        if (request.getPassword() != null && !request.getPassword().isBlank()) {
+            if (request.getCurrentPassword() == null || request.getCurrentPassword().isBlank()) {
+                throw new RuntimeException("Debes ingresar tu contraseña actual para cambiarla.");
+            }
+            // Comparamos el texto plano que llega del front contra el hash guardado en la BD
+            if (!passwordEncoder.matches(request.getCurrentPassword(), user.getPassword())) {
+                throw new RuntimeException("La contraseña actual es incorrecta.");
+            }
+            user.setPassword(passwordEncoder.encode(request.getPassword()));
+        }
         // NUEVA VALIDACIÓN DE SEGURIDAD: Solo un ADMIN puede cambiar roles
         if (request.getRole() != null) {
             if (!currentUser.getRole().name().equals("ADMIN")) {
