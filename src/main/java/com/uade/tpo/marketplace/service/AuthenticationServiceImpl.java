@@ -33,6 +33,11 @@ public class AuthenticationServiceImpl implements AuthenticationService{
                 requestedRole = "BUYER"; 
         }
 
+        // La contraseña tiene que tener al menos 8 caracteres
+        if (request.getPassword() == null || request.getPassword().length() < 8) {
+            throw new RuntimeException("La contraseña debe tener al menos 8 caracteres.");
+        }
+        
         User user = userService.createUser(
                 request.getUsername(),
                 request.getName(),
