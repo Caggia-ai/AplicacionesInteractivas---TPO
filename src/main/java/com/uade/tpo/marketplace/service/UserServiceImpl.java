@@ -104,6 +104,9 @@ public class UserServiceImpl implements UserService {
             if (!passwordEncoder.matches(request.getCurrentPassword(), user.getPassword())) {
                 throw new RuntimeException("La contraseña actual es incorrecta.");
             }
+            if (request.getPassword().length() < 8) {
+                throw new RuntimeException("La nueva contraseña debe tener al menos 8 caracteres.");
+            }
             user.setPassword(passwordEncoder.encode(request.getPassword()));
         }
         // NUEVA VALIDACIÓN DE SEGURIDAD: Solo un ADMIN puede cambiar roles
